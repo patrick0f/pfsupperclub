@@ -466,57 +466,71 @@ Two panels:
 
 ## Development Phases
 
-### Phase 1 — Foundation
-- Init Next.js project
-- Prisma + local PostgreSQL
-- Schema + migrations (including seat generation on event publish)
-- NextAuth.js admin auth
-- Session cookie setup for guest flow
+### Phase 1 — Foundation ✅
+- Next.js 14 App Router (TypeScript, Tailwind, ESLint)
+- Prisma 7 + `@prisma/adapter-pg` for direct PostgreSQL connection
+- Full schema (10 models, 6 enums) + initial migration
+- `lib/prisma.ts` singleton, `lib/session.ts` (iron-session), `types/index.ts` (NextAuth augmentation)
+- NextAuth.js credentials provider for admin (bcryptjs comparison against `admins` table)
+- TDD: `generateConfirmationNumber` (`PF-XXXXXX`, ambiguous chars excluded)
+- TDD: `generateSeatsForEvent` (injected prisma, single `createMany` call)
+- All 16 page stubs + 26 API route stubs
+- TypeScript clean, 8/8 tests pass
 
 ### Phase 2 — Guest Flow
-- Email gate (unknown / waitlisted / denied / approved-incomplete / approved-complete)
-- Profile completion step
-- Guest profile page (edit name, phone)
-- Home page with event display + theming + empty state ("New events coming soon!")
-- Past events page (read-only list of completed events)
-- Guest info form (with back button to home)
-- Stripe Checkout (session creation, redirect, webhook, cleanup job)
-- Confirmation screen
-- Seat selection page (programmatic render, polling, N-click, unselect, note field — accessed via 72h email link)
-- Manage reservation page (cancel + change seats)
+- **Unified landing page**: email input handles both guests and admin
+  - Unknown email → waitlist popup
+  - Waitlisted → "you're on the waitlist" message
+  - Denied → identical popup to unknown (no indication of denial)
+  - Admin email → password field appears; correct password → admin session → redirect to `/admin`
+  - Approved + profile incomplete → profile completion step (first name, last name, phone)
+  - Approved + profile complete → home page
+  - Denied user re-submitting email resets status to `waitlisted`
+- **Guest profile page**: view/edit first name, last name, phone (email read-only)
+- **Home page**: single published event with full details + theming; empty state; CTA with party size selector (capped at min(4, available)); past events link
+- **Past events page**: read-only list of completed events (title, date, menu image)
+- **Guest info form**: primary contact pre-filled from profile; additional guests with name + dietary restrictions; back button to home
+- **Stripe Checkout**: session creation (`allow_promotion_codes: true`), redirect, webhook marks `paid + reserved`, confirmation email triggered
+- **Confirmation screen**: reservation summary + confirmation number + manage reservation link
+- **Seat selection page**: programmatic table render (rectangle or round), polling every 5–10s, N-click selection, unselect by re-clicking, note field, "Confirm" enabled only when exactly N seats chosen; locked and shows closed message within 24h of event; accessed via signed token in 72h email
+- **Manage reservation page**: cancel (shows cancellation policy, no auto-refund) + change seats (re-opens seat chart, locked within 24h)
+- **Guest nav**: profile link + logout button on all guest pages
 
 ### Phase 3 — Emails
-- AWS SES setup (verify domain, production access)
-- Approval email
-- Confirmation email (fires on Stripe webhook)
-- 72h email (seat selection link) + scheduled trigger
-- 24h reminder email (finalized seats) + scheduled trigger
-- Seats-confirmed blast email (admin-triggered)
-- Cancellation email
-- Event cancellation email
+- AWS SES setup (domain verification, production access)
+- Approval email (trigger: admin approves waitlisted user)
+- Confirmation email (trigger: Stripe webhook — `checkout.session.completed`)
+- 72h email with signed seat selection link (trigger: scheduled check for events starting within 72h where `seat_selection_sent_at IS NULL`)
+- 24h reminder email with finalized seat assignment (trigger: scheduled check for events starting within 24h where `reminder_sent_at IS NULL`)
+- Seats-confirmed blast (trigger: admin manually fires from seating chart page)
+- Guest cancellation email (trigger: guest cancels reservation)
+- Event cancellation email (trigger: admin cancels event)
+- Scheduled triggers: EventBridge rules or hourly cron API route
 
 ### Phase 4 — Admin Panel
-- Admin login
-- Dashboard (stats + pending approvals + seats-not-selected count)
-- Event CRUD (all fields, seat generation on publish, event cancellation flow)
-- S3 uploads (menu PNG, header image)
-- Guest list management (approve/deny, CSV export)
-- Reservation management (view, manual cancel/refund, seat override, no-show, resend emails, CSV export)
-- Seating chart view + seat assignment + seating confirmation blast
-- Recipe CRUD (components, ingredients, steps, scaling, unit conversion, print)
+- **Admin auth guard**: all `/admin/*` routes protected by NextAuth session; redirect to landing page if unauthenticated
+- **Admin nav**: logout button + profile link on all admin pages
+- **Admin profile** (`/admin/profile`): edit email + phone
+- **Dashboard** (`/admin`): pending approvals (approve/deny buttons), current event snapshot (seats sold, revenue, seats-not-selected count), quick links to reservations and seating chart
+- **Guest list** (`/admin/guests`): table of all users with status, filter by status, approve/deny actions, CSV export
+- **Events** (`/admin/events`): list all events; create/edit form (all fields including S3 uploads for menu PNG and header image); publish/unpublish/cancel; enforce one published event at a time; seat generation (`generateSeatsForEvent`) fires on publish
+- **Reservations per event** (`/admin/events/[id]/reservations`): table with all guest detail; per-row actions: cancel, mark no-show, issue refund (Stripe API), manually override seat assignment, resend confirmation email, resend reminder email; CSV export
+- **Seating chart** (`/admin/events/[id]/seating`): programmatic table render; seats color-coded assigned/unassigned; click unassigned seat → assign to reservation; "Send seating confirmation" button with unassigned-seat warning count; can re-send after changes
+- **Recipes** (`/admin/recipes`): list with search + filter by event/course; recipe editor with name, course, event tag, base servings; scaling multiplier (live display, base quantities unchanged); unit conversion (metric ↔ imperial within weight/volume categories); components with labeled sections; ingredients per component (name, quantity, unit, reorder); steps (reorder); print view
 
 ### Phase 5 — AWS Deployment
-- RDS PostgreSQL
-- S3 bucket
-- Amplify deploy
-- IAM, env vars, Stripe webhook registration
-- Smoke test end to end
+- RDS PostgreSQL: provision, run migrations, configure connection string
+- S3 bucket: configure CORS, IAM policy for presigned upload URLs
+- AWS Amplify: connect repo, configure build settings, set all env vars
+- Stripe: register production webhook endpoint, copy signing secret
+- SES: verify sending domain, confirm production access
+- Smoke test: end-to-end booking flow, payment webhook, email delivery
 
 ### Phase 6 — Polish
-- Mobile optimization (touch-friendly seat chart)
-- Loading/error states throughout
+- Mobile optimization (touch-friendly seat chart, responsive layout throughout)
+- Loading states and error boundaries throughout
 - Rate limiting on auth + booking routes
-- Cleanup job for abandoned pending reservations (silent delete after 30 min)
-- Auto-complete events past their date (cron)
-- Seat row management when admin changes total_seats post-publish
-- CloudWatch monitoring
+- Cleanup job: silently delete `pending` reservations + guest rows older than 30 min
+- Auto-complete cron: move `published` events to `completed` after event date passes
+- Seat row management: add new rows when admin increases `total_seats` post-publish; block removal of rows with `reservation_id` set
+- CloudWatch monitoring + alerting

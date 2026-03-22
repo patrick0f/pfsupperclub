@@ -1,3 +1,53 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## Interaction Protocol
+
+These rules govern how Claude behaves before, during, and after any task.
+
+### Before Writing Any Code
+
+- **MUST** describe the approach and wait for explicit approval before writing code.
+- **MUST** ask clarifying questions if requirements are ambiguous — do not assume and proceed.
+- **MUST** if a task touches > 3 files, stop and break it into smaller subtasks first. Present the breakdown and get approval before starting any of them.
+- **MUST** read LEARNING.md at the start of any non-trivial session to calibrate communication style.
+
+### While Coding
+
+- **MUST NOT** jump ahead to the next logical step without confirmation. Do one thing, stop, wait.
+- **MUST NOT** refactor, rename, or restructure code that wasn't explicitly asked to change. Touch only what was asked.
+- **MUST NOT** make broad "while I'm here" improvements — scope is exactly what was requested.
+- When given a paste of code or text, find the gap between what it shows and what is being asked. Do not summarize it back.
+
+### After Writing Code
+
+- **MUST** list what could break as a result of the changes.
+- **MUST** suggest specific tests to cover those risks.
+- Run existing tests and type checks before declaring work done.
+
+### Bug Workflow
+
+- **MUST** write a failing test that reproduces the bug first, then fix code until the test passes. Never fix first.
+
+### Self-Updating Rules
+
+- **MUST** when the user corrects behavior, add a new rule to this file immediately so it never recurs.
+- **MUST NOT** add commands, file structure, or architecture descriptions to CLAUDE.md — Claude explores the codebase directly. Only add things Claude cannot discover on its own (behavior rules, coding standards, shortcuts).
+
+### Communication Style (from LEARNING.md)
+
+- **Bottom line first.** State the answer, then support it. Never build to a conclusion.
+- **"wait"** = misalignment caught in real time. Pivot immediately and cleanly. Do not explain why the original answer was still relevant.
+- **"so..."** at the start of a message = the user is testing their mental model, not summarizing. Push back if it's slightly off — this is the highest-leverage correction point.
+- **Short answers first.** Depth on request only.
+- **Intuition before formalism.** If the user asks for "simple" or "intuitive", the formal version didn't land. Give an analogy first.
+- **"ohhh ok" / "i see"** = done. Move on immediately.
+
+---
+
 ## Implementation Best Practices
 
 ### 0 - Purpose
@@ -12,7 +62,6 @@ These rules ensure maintainability, safety, and developer velocity.
 - **BP-1 (MUST)** Ask the user clarifying questions.
 - **BP-2 (SHOULD)** Draft and confirm an approach for complex work.
 - **BP-3 (SHOULD)** If >= 2 approaches exist, list clear pros and cons.
-- **BP-4 (MUST)** Look at LEARNING.md to understand how I learn and function when interacting with AI
 
 ---
 
@@ -32,151 +81,96 @@ These rules ensure maintainability, safety, and developer velocity.
 ### 3 - Testing
 
 - **T-1 (MUST)** For a simple function, colocate unit tests in `*.spec.ts` in same directory as source file.
-- **T-2 (MUST)** For any API change, add/extend integration tests in `worker/test/*.spec.ts`.
+- **T-2 (MUST)** For any API change, add/extend integration tests in `test/*.spec.ts`.
 - **T-3 (MUST)** ALWAYS separate pure-logic unit tests from integration tests.
 - **T-4 (SHOULD)** Prefer integration tests over heavy mocking.
 - **T-5 (SHOULD)** Unit-test complex algorithms thoroughly.
 - **T-6 (SHOULD)** Test the entire structure in one assertion if possible
   ```ts
-  expect(result).toBe([value]) // Good
+  expect(result).toEqual([value]) // Good
 
   expect(result).toHaveLength(1); // Bad
-  expect(result[0]).toBe(value); // Bad
+  expect(result[0]).toBe(value);  // Bad
   ```
 
 ---
 
-### 4 - State Management
+### 4 - Code Organization
 
-- **S-1 (MUST)** Use Durable Objects for persistent room state.
-- **S-2 (SHOULD)** Keep pure logic functions separate from DO methods for testability.
-
----
-
-### 5 - Code Organization
-
-- **O-1 (MUST)** Place shared types in the appropriate `types.ts` file within each package.
-- **O-2 (SHOULD)** Colocate related logic (e.g., `review-logic.ts` with `review-logic.spec.ts`).
+- **O-1 (MUST)** Place shared types in the appropriate `types.ts` or `*.schemas.ts` file within each module.
+- **O-2 (SHOULD)** Colocate related logic (e.g., `workers.service.ts` with `workers.service.spec.ts`).
 
 ---
 
-### 6 - Tooling Gates
+### 5 - Tooling Gates
 
-- **G-1 (MUST)** `npx tsc --noEmit` passes in both `worker/` and `frontend/`.
-- **G-2 (MUST)** `npm test` passes in both `worker/` and `frontend/`.
+- **G-1 (MUST)** TypeScript compilation must pass with no errors before marking work done.
+- **G-2 (MUST)** All relevant tests must pass before marking work done.
 
 ---
 
-### 7 - Git
+### 6 - Git
 
-- **GH-1 (MUST)** Use Conventional Commits format when writing commit messages: https://www.conventionalcommits.org/en/v1.0.0
-- **GH-2 (SHOULD NOT)** Refer to Claude or Anthropic in commit messages.
+- **GH-1 (MUST)** Use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
+- **GH-2 (MUST NOT)** Refer to Claude or Anthropic in commit messages.
+- **GH-3 (MUST)** Keep commit messages concise. No long bodies unless there's a breaking change explanation.
 
 ---
 
 ## Writing Functions Best Practices
 
-When evaluating whether a function you implemented is good or not, use this checklist:
+When evaluating whether a function is good, use this checklist:
 
-1. Can you read the function and HONESTLY easily follow what it's doing? If yes, then stop here.
-2. Does the function have very high cyclomatic complexity? (number of independent paths, or, in a lot of cases, number of nesting if if-else as a proxy). If it does, then it's probably sketchy.
-3. Are there any common data structures and algorithms that would make this function much easier to follow and more robust? Parsers, trees, stacks / queues, etc.
-4. Are there any unused parameters in the function?
-5. Are there any unnecessary type casts that can be moved to function arguments?
-6. Is the function easily testable without mocking core features (e.g. sql queries, redis, etc.)? If not, can this function be tested as part of an integration test?
-7. Does it have any hidden untested dependencies or any values that can be factored out into the arguments instead? Only care about non-trivial dependencies that can actually change or affect the function.
-8. Brainstorm 3 better function names and see if the current name is the best, consistent with rest of codebase.
+1. Can you read the function and HONESTLY easily follow what it's doing? If yes, stop here.
+2. Does it have very high cyclomatic complexity (deep nesting, many branches)?
+3. Are there common data structures (stacks, queues, trees) that would make it cleaner?
+4. Are there any unused parameters?
+5. Are there unnecessary type casts that could be moved to function arguments?
+6. Is it testable without mocking core infrastructure (DB, redis, etc.)? If not, can it be integration-tested?
+7. Does it have hidden untested dependencies that could be factored into arguments?
+8. Brainstorm 3 better function names — is the current one best and consistent with the codebase?
 
-IMPORTANT: you SHOULD NOT refactor out a separate function unless there is a compelling need, such as:
-  - the refactored function is used in more than one place
-  - the refactored function is easily unit testable while the original function is not AND you can't test it any other way
-  - the original function is extremely hard to follow and you resort to putting comments everywhere just to explain it
+**MUST NOT** refactor out a separate function unless:
+- It will be reused elsewhere, OR
+- It's the only way to unit-test otherwise untestable logic, OR
+- The original is extremely hard to follow even with self-explanatory code
+
+---
 
 ## Writing Tests Best Practices
 
-When evaluating whether a test you've implemented is good or not, use this checklist:
+When evaluating whether a test is good, use this checklist:
 
-1. SHOULD parameterize inputs; never embed unexplained literals such as 42 or "foo" directly in the test.
-2. SHOULD NOT add a test unless it can fail for a real defect. Trivial asserts (e.g., expect(2).toBe(2)) are forbidden.
-3. SHOULD ensure the test description states exactly what the final expect verifies. If the wording and assert don't align, rename or rewrite.
-4. SHOULD compare results to independent, pre-computed expectations or to properties of the domain, never to the function's output re-used as the oracle.
-5. SHOULD follow the same lint, type-safety, and style rules as prod code (prettier, ESLint, strict types).
-6. SHOULD express invariants or axioms (e.g., commutativity, idempotence, round-trip) rather than single hard-coded cases whenever practical. Use `fast-check` library e.g.
-```
-import fc from 'fast-check';
-import { describe, expect, test } from 'vitest';
-import { getCharacterCount } from './string';
-
-describe('properties', () => {
-  test('concatenation functoriality', () => {
-    fc.assert(
-      fc.property(
-        fc.string(),
-        fc.string(),
-        (a, b) =>
-          getCharacterCount(a + b) ===
-          getCharacterCount(a) + getCharacterCount(b)
-      )
-    );
-  });
-});
-```
-
-7. Unit tests for a function should be grouped under `describe(functionName, () => ...`.
-8. Use `expect.any(...)` when testing for parameters that can be anything (e.g. variable ids).
-9. ALWAYS use strong assertions over weaker ones e.g. `expect(x).toEqual(1)` instead of `expect(x).toBeGreaterThanOrEqual(1)`.
+1. SHOULD parameterize inputs; never embed unexplained literals like `42` or `"foo"` directly.
+2. SHOULD NOT add a test unless it can fail for a real defect.
+3. SHOULD ensure the test description states exactly what the final `expect` verifies.
+4. SHOULD compare results to independent, pre-computed expectations — never reuse the function's output as the oracle.
+5. SHOULD follow the same lint, type-safety, and style rules as prod code.
+6. SHOULD express invariants or axioms (commutativity, idempotence, round-trip) using `fast-check` where practical.
+7. Unit tests for a function should be grouped under `describe(functionName, () => ...)`.
+8. Use `expect.any(...)` for parameters that can be anything (e.g. variable IDs).
+9. ALWAYS use strong assertions: `expect(x).toEqual(1)` over `expect(x).toBeGreaterThanOrEqual(1)`.
 10. SHOULD test edge cases, realistic input, unexpected input, and value boundaries.
-11. SHOULD NOT test conditions that are caught by the type checker.
+11. SHOULD NOT test conditions caught by the type checker.
 
-## Code Organization
+---
 
-- `worker/` - Cloudflare Worker + Durable Objects + Workflows
-  - `worker/src/` - Source files (handlers, logic, prompts)
-  - `worker/src/*.spec.ts` - Unit tests (colocated)
-  - `worker/test/` - Integration tests
-- `frontend/` - Vite + React app (Cloudflare Pages)
-  - `frontend/src/` - React components and hooks
-  - `frontend/src/*.spec.ts` - Unit tests (colocated)
-  - `frontend/public/` - Static assets and `_redirects`
-  - `frontend/functions/` - Pages Functions (API proxy)
-
-## Remember Shortcuts
-
-Remember the following shortcuts which the user may invoke at any time.
+## Shortcuts
 
 ### QNEW
-
-When I type "qnew", this means:
-
 ```
 Understand all BEST PRACTICES listed in CLAUDE.md.
 Your code SHOULD ALWAYS follow these best practices.
 ```
 
-### QPLAN
-
-When I type "qplan", this means:
-```
-Analyze similar parts of the codebase and determine whether your plan:
-- is consistent with rest of codebase
-- introduces minimal changes
-- reuses existing code
-```
-
-## QCODE
-
-When I type "qcode", this means:
-
+### QCODE
 ```
 Implement your plan and make sure your new tests pass.
 Always run tests to make sure you didn't break anything else.
-Always run `npx tsc --noEmit` to make sure type checking passes.
+Always run TypeScript compilation to make sure type checking passes.
 ```
 
 ### QCHECK
-
-When I type "qcheck", this means:
-
 ```
 You are a SKEPTICAL senior software engineer.
 Perform this analysis for every MAJOR code change you introduced (skip minor changes):
@@ -186,55 +180,34 @@ Perform this analysis for every MAJOR code change you introduced (skip minor cha
 3. CLAUDE.md checklist Implementation Best Practices.
 ```
 
-### QCHECKF
-
-When I type "qcheckf", this means:
-
-```
-You are a SKEPTICAL senior software engineer.
-Perform this analysis for every MAJOR function you added or edited (skip minor changes):
-
-1. CLAUDE.md checklist Writing Functions Best Practices.
-```
-
-### QCHECKT
-
-When I type "qcheckt", this means:
-
-```
-You are a SKEPTICAL senior software engineer.
-Perform this analysis for every MAJOR test you added or edited (skip minor changes):
-
-1. CLAUDE.md checklist Writing Tests Best Practices.
-```
-
 ### QUX
-
-When I type "qux", this means:
-
 ```
 Imagine you are a human UX tester of the feature you implemented.
 Output a comprehensive list of scenarios you would test, sorted by highest priority.
 ```
 
 ### QGIT
-
-When I type "qgit", this means:
-
 ```
 Add all changes to staging, create a commit, and push to remote.
 
-Follow this checklist for writing your commit message:
-- SHOULD use Conventional Commits format: https://www.conventionalcommits.org/en/v1.0.0
-- SHOULD NOT refer to Claude or Anthropic in the commit message.
-- SHOULD structure commit message as follows:
-<type>[optional scope]: <description>
-[optional body]
-[optional footer(s)]
-- commit SHOULD contain the following structural elements to communicate intent:
-fix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).
-feat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).
-BREAKING CHANGE: a commit that has a footer BREAKING CHANGE:, or appends a ! after the type/scope, introduces a breaking API change (correlating with MAJOR in Semantic Versioning). A BREAKING CHANGE can be part of commits of any type.
-types other than fix: and feat: are allowed, for example @commitlint/config-conventional (based on the Angular convention) recommends build:, chore:, ci:, docs:, style:, refactor:, perf:, test:, and others.
-footers other than BREAKING CHANGE: <description> may be provided and follow a convention similar to git trailer format.
+Commit message rules:
+- Use Conventional Commits format (fix:, feat:, refactor:, etc.)
+- Do NOT mention Claude or Anthropic.
+- Keep the subject line concise (under 72 chars).
+- Only add a body if there's a breaking change or non-obvious context.
+```
+
+### QBREAK
+```
+List everything that could break as a result of the changes just made.
+For each risk, suggest a specific test or manual check to verify it.
+```
+
+### QDEBUG
+```
+Before fixing this bug:
+1. Write a failing test that reproduces it exactly.
+2. Confirm the test fails.
+3. Fix the minimal code needed to make it pass.
+4. Run the full test suite to check for regressions.
 ```
