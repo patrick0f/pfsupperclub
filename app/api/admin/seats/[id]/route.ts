@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
 
-export async function PATCH(_req: Request, { params }: { params: { id: string } }) {
+export async function PATCH() {
   return NextResponse.json({ ok: true, message: 'stub' })
 }

@@ -6,7 +6,7 @@ export type SessionUser = {
   profileComplete: boolean
 }
 
-export type AppSession = { user?: SessionUser }
+export type AppSession = { user?: SessionUser; confirmationNumber?: string }
 
 export const sessionOptions: SessionOptions = {
   password: process.env.IRON_SESSION_PASSWORD!,

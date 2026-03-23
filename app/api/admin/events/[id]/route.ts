@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 
-export async function PUT(_req: Request, { params }: { params: { id: string } }) {
+export async function PUT() {
   return NextResponse.json({ ok: true, message: 'stub' })
 }
 
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE() {
   return NextResponse.json({ ok: true, message: 'stub' })
 }
