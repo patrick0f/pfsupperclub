@@ -5,6 +5,33 @@ A reservation platform for a private supper club. Invite-only via email gate. On
 
 ---
 
+## External Setup Required
+
+### Local dev (Phase 2+)
+- `IRON_SESSION_PASSWORD`: `openssl rand -base64 32` (32+ chars)
+- `NEXTAUTH_SECRET`: `openssl rand -base64 32`
+- `NEXT_PUBLIC_BASE_URL=http://localhost:3000`
+- Stripe: `sk_test_...` → `STRIPE_SECRET_KEY`, `pk_test_...` → `STRIPE_PUBLISHABLE_KEY`
+- Stripe local webhook: `stripe listen --forward-to localhost:3000/api/webhooks/stripe` → copy `whsec_...` → `STRIPE_WEBHOOK_SECRET`
+- Seed admin: hash password with bcryptjs, INSERT into admins table via psql
+- Approve test user: `UPDATE users SET status='approved' WHERE email='...'`
+
+### Phase 3 (emails)
+- AWS SES: verify sender domain/email, request production access
+- AWS IAM: create user with `AmazonSESFullAccess`, generate access key
+- Set: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_SES_FROM_EMAIL`
+- `CRON_SECRET`: `openssl rand -base64 32`
+- Cron trigger: EventBridge → HTTP GET `/api/cron/send-emails` hourly
+
+### Phase 5 (deployment)
+- RDS: provision PostgreSQL, run `npx prisma migrate deploy`
+- S3: create bucket, configure CORS for uploads
+- Amplify: connect repo, set all env vars
+- Stripe: register production webhook at `https://yourdomain.com/api/webhooks/stripe`
+- SES: confirm production access, add DNS records for sender domain
+
+---
+
 ## Open Questions (resolve before building)
 
 ### Resolved
@@ -477,7 +504,7 @@ Two panels:
 - All 16 page stubs + 26 API route stubs
 - TypeScript clean, 8/8 tests pass
 
-### Phase 2 — Guest Flow
+### Phase 2 — Guest Flow ✅
 - **Unified landing page**: email input handles both guests and admin
   - Unknown email → waitlist popup
   - Waitlisted → "you're on the waitlist" message
