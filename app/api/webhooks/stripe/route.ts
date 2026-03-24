@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 import Stripe from 'stripe'
 import { prisma } from '@/lib/prisma'
+import { sendEmail } from '@/lib/email'
+import { confirmationEmail } from '@/lib/emails/confirmation'
 
 export async function POST(req: NextRequest) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
@@ -28,11 +30,43 @@ export async function POST(req: NextRequest) {
       data: {
         paymentStatus: 'paid',
         reservationStatus: 'reserved',
+        confirmationSentAt: new Date(),
         stripePaymentIntentId: typeof session.payment_intent === 'string'
           ? session.payment_intent
           : null,
       },
     })
+
+    // Only proceed if confirmationSentAt was set by the updateMany above —
+    // guards against double-send on Stripe webhook retry (second call finds 0 rows to update, so confirmationSentAt stays null).
+    const reservation = await prisma.reservation.findFirst({
+      where: { stripeCheckoutSessionId: session.id, confirmationSentAt: { not: null } },
+      include: { user: true, event: true, guests: true },
+    })
+
+    if (reservation) {
+      const primaryGuest = reservation.guests.find(g => g.isPrimary)
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? ''
+      const manageUrl = `${baseUrl}/reservation/manage?confirmationNumber=${reservation.confirmationNumber}&email=${encodeURIComponent(reservation.user.email)}`
+
+      const { subject, html } = confirmationEmail({
+        confirmationNumber: reservation.confirmationNumber,
+        eventTitle: reservation.event.title,
+        eventDate: reservation.event.date,
+        eventLocation: reservation.event.location,
+        partySize: reservation.partySize,
+        totalAmount: reservation.totalAmount,
+        primaryGuestName: primaryGuest?.name ?? reservation.user.firstName ?? 'Guest',
+        cancellationPolicyText: reservation.event.cancellationPolicyText,
+        manageUrl,
+      })
+
+      try {
+        await sendEmail(reservation.user.email, subject, html)
+      } catch (err) {
+        console.error(`Failed to send confirmation email to ${reservation.user.email}:`, err)
+      }
+    }
   }
 
   return NextResponse.json({ ok: true })
