@@ -543,6 +543,8 @@ Two panels:
 - **Events** (`/admin/events`): list all events; create/edit form (all fields including S3 uploads for menu PNG and header image); publish/unpublish/cancel; enforce one published event at a time; seat generation (`generateSeatsForEvent`) fires on publish
 - **Reservations per event** (`/admin/events/[id]/reservations`): table with all guest detail; per-row actions: cancel, mark no-show, issue refund (Stripe API), manually override seat assignment, resend confirmation email, resend reminder email; CSV export
 - **Seating chart** (`/admin/events/[id]/seating`): programmatic table render; seats color-coded assigned/unassigned; click unassigned seat → assign to reservation; "Send seating confirmation" button with unassigned-seat warning count; can re-send after changes
+
+### Phase 4.5 — Recipes
 - **Recipes** (`/admin/recipes`): list with search + filter by event/course; recipe editor with name, course, event tag, base servings; scaling multiplier (live display, base quantities unchanged); unit conversion (metric ↔ imperial within weight/volume categories); components with labeled sections; ingredients per component (name, quantity, unit, reorder); steps (reorder); print view
 
 ### Phase 5 — AWS Deployment
