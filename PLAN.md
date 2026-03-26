@@ -460,6 +460,7 @@ Two panels:
 |---|---|---|
 | POST | /api/auth/check-email | Check email status; set session cookie |
 | POST | /api/auth/complete-profile | Save name + phone for new approved users |
+| GET | /api/events | List published + completed events (id, title, date) — public, no auth |
 | GET | /api/events/upcoming | Get the single published upcoming event |
 | GET | /api/events/past | List completed events (read-only, for guest past events page) |
 | GET | /api/events/[id]/seats | Get current seat availability |
@@ -523,7 +524,7 @@ Two panels:
 - **Manage reservation page**: cancel (shows cancellation policy, no auto-refund) + change seats (re-opens seat chart, locked within 24h)
 - **Guest nav**: profile link + logout button on all guest pages
 
-### Phase 3 — Emails
+### Phase 3 — Emails ✅
 - AWS SES setup (domain verification, production access)
 - Approval email (trigger: admin approves waitlisted user)
 - Confirmation email (trigger: Stripe webhook — `checkout.session.completed`)
@@ -534,7 +535,7 @@ Two panels:
 - Event cancellation email (trigger: admin cancels event)
 - Scheduled triggers: EventBridge rules or hourly cron API route
 
-### Phase 4 — Admin Panel
+### Phase 4 — Admin Panel ✅
 - **Admin auth guard**: all `/admin/*` routes protected by NextAuth session; redirect to landing page if unauthenticated
 - **Admin nav**: logout button + profile link on all admin pages
 - **Admin profile** (`/admin/profile`): edit email + phone
@@ -543,9 +544,7 @@ Two panels:
 - **Events** (`/admin/events`): list all events; create/edit form (all fields including S3 uploads for menu PNG and header image); publish/unpublish/cancel; enforce one published event at a time; seat generation (`generateSeatsForEvent`) fires on publish
 - **Reservations per event** (`/admin/events/[id]/reservations`): table with all guest detail; per-row actions: cancel, mark no-show, issue refund (Stripe API), manually override seat assignment, resend confirmation email, resend reminder email; CSV export
 - **Seating chart** (`/admin/events/[id]/seating`): programmatic table render; seats color-coded assigned/unassigned; click unassigned seat → assign to reservation; "Send seating confirmation" button with unassigned-seat warning count; can re-send after changes
-
-### Phase 4.5 — Recipes
-- **Recipes** (`/admin/recipes`): list with search + filter by event/course; recipe editor with name, course, event tag, base servings; scaling multiplier (live display, base quantities unchanged); unit conversion (metric ↔ imperial within weight/volume categories); components with labeled sections; ingredients per component (name, quantity, unit, reorder); steps (reorder); print view
+- `GET /api/events` — public endpoint returning published + completed events (id, title, date); no auth required
 
 ### Phase 5 — AWS Deployment
 - RDS PostgreSQL: provision, run migrations, configure connection string
