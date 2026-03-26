@@ -11,21 +11,19 @@ const BASE_ROW = {
   totalAmount: 20000,
   paymentStatus: 'paid',
   reservationStatus: 'reserved',
-  seatsSelected: true,
-  seats: [3, 7],
   createdAt: CREATED_AT,
 }
 
 describe('exportReservationsCsv', () => {
   test('returns only header row for empty input', () => {
     const csv = exportReservationsCsv([])
-    expect(csv).toBe('confirmationNumber,primaryGuestName,email,partySize,totalAmountCents,paymentStatus,reservationStatus,seatsSelected,seats,createdAt')
+    expect(csv).toBe('confirmationNumber,primaryGuestName,email,partySize,totalAmountCents,paymentStatus,reservationStatus,createdAt')
   })
 
   test('header row matches expected columns', () => {
     const csv = exportReservationsCsv([BASE_ROW])
     const header = csv.split('\n')[0]
-    expect(header).toBe('confirmationNumber,primaryGuestName,email,partySize,totalAmountCents,paymentStatus,reservationStatus,seatsSelected,seats,createdAt')
+    expect(header).toBe('confirmationNumber,primaryGuestName,email,partySize,totalAmountCents,paymentStatus,reservationStatus,createdAt')
   })
 
   test('data row contains expected values', () => {
@@ -35,7 +33,7 @@ describe('exportReservationsCsv', () => {
     expect(row).toContain('"Jane Smith"')
     expect(row).toContain('"jane@example.com"')
     expect(row).toContain('20000')
-    expect(row).toContain('"3;7"')
+    expect(row).toContain(CREATED_AT.toISOString())
   })
 
   test('double-quotes in names are escaped as double-double-quotes', () => {
@@ -49,10 +47,5 @@ describe('exportReservationsCsv', () => {
     const row = csv.split('\n')[1]
     const fields = row.split('","')
     expect(fields[1]).toContain('Smith, Jane')
-  })
-
-  test('empty seats array renders as empty string between quotes', () => {
-    const csv = exportReservationsCsv([{ ...BASE_ROW, seats: [] }])
-    expect(csv).toContain('""')
   })
 })

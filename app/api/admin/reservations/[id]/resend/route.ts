@@ -20,7 +20,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       user: true,
       event: true,
       guests: true,
-      seats: { orderBy: { seatNumber: 'asc' } },
     },
   })
   if (!reservation) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -53,7 +52,6 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       eventLocation: reservation.event.location,
       partySize: reservation.partySize,
       primaryGuestName,
-      seats: reservation.seats.map(s => ({ seatNumber: s.seatNumber })),
     }))
   }
 

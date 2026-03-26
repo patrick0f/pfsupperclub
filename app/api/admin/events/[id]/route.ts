@@ -44,7 +44,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       pricePerSeat: body.pricePerSeat ?? event.pricePerSeat,
       totalSeats: body.totalSeats ?? event.totalSeats,
       menuImageUrl: body.menuImageUrl !== undefined ? body.menuImageUrl : event.menuImageUrl,
-      tableShape: body.tableShape ?? event.tableShape,
       cancellationPolicyText: body.cancellationPolicyText ?? event.cancellationPolicyText,
       themeBgColor: body.themeBgColor ?? event.themeBgColor,
       themeAccentColor: body.themeAccentColor ?? event.themeAccentColor,

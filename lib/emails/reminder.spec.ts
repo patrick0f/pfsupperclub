@@ -9,7 +9,6 @@ const BASE_DATA = {
   eventLocation: '123 Main St',
   partySize: 2,
   primaryGuestName: 'Jane Smith',
-  seats: [{ seatNumber: 3 }, { seatNumber: 7 }],
 }
 
 describe('reminderEmail', () => {
@@ -23,12 +22,6 @@ describe('reminderEmail', () => {
     expect(html).toContain('Jane Smith')
   })
 
-  test('html contains seat numbers', () => {
-    const { html } = reminderEmail(BASE_DATA)
-    expect(html).toContain('#3')
-    expect(html).toContain('#7')
-  })
-
   test('html contains event location', () => {
     const { html } = reminderEmail(BASE_DATA)
     expect(html).toContain('123 Main St')
@@ -37,11 +30,6 @@ describe('reminderEmail', () => {
   test('html contains confirmation number', () => {
     const { html } = reminderEmail(BASE_DATA)
     expect(html).toContain('PF-AB12CD')
-  })
-
-  test('html shows fallback when no seats assigned', () => {
-    const { html } = reminderEmail({ ...BASE_DATA, seats: [] })
-    expect(html).toContain('Seat assignments will be sent separately')
   })
 
   test('html escapes injection in guest name', () => {

@@ -6,8 +6,6 @@ type ReservationRow = {
   totalAmount: number
   paymentStatus: string
   reservationStatus: string
-  seatsSelected: boolean
-  seats: number[]
   createdAt: Date
 }
 
@@ -23,8 +21,6 @@ const HEADERS = [
   'totalAmountCents',
   'paymentStatus',
   'reservationStatus',
-  'seatsSelected',
-  'seats',
   'createdAt',
 ]
 
@@ -37,8 +33,6 @@ export function exportReservationsCsv(reservations: ReservationRow[]): string {
     quote(String(r.totalAmount)),
     quote(r.paymentStatus),
     quote(r.reservationStatus),
-    quote(String(r.seatsSelected)),
-    quote(r.seats.join(';')),
     quote(r.createdAt.toISOString()),
   ].join(','))
   return [HEADERS.join(','), ...rows].join('\n')

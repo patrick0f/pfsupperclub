@@ -14,10 +14,7 @@ export async function POST(_req: NextRequest, { params }: { params: { id: string
   if (event.status !== 'published') return NextResponse.json({ error: 'Only published events can be unpublished' }, { status: 409 })
   if (event._count.reservations > 0) return NextResponse.json({ error: 'Cannot unpublish event with paid reservations' }, { status: 409 })
 
-  await prisma.$transaction([
-    prisma.seat.deleteMany({ where: { eventId: params.id } }),
-    prisma.event.update({ where: { id: params.id }, data: { status: 'draft' } }),
-  ])
+  await prisma.event.update({ where: { id: params.id }, data: { status: 'draft' } })
 
   return NextResponse.json({ ok: true })
 }

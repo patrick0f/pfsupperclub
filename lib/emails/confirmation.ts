@@ -28,8 +28,6 @@ export function confirmationEmail(data: ConfirmationEmailData): { subject: strin
     <tr><td style="padding: 8px 0; color: #666;">Confirmation</td><td><strong>${escapeHtml(data.confirmationNumber)}</strong></td></tr>
   </table>
 
-  <p>You'll receive a separate email 72 hours before the event with a link to select your seats.</p>
-
   <h3 style="margin-top: 32px;">Cancellation policy</h3>
   <p style="color: #555;">${escapeHtml(data.cancellationPolicyText)}</p>
 

@@ -13,7 +13,7 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function EventsPage() {
   const events = await prisma.event.findMany({
     orderBy: { date: 'desc' },
-    include: { _count: { select: { seats: true, reservations: true } } },
+    include: { _count: { select: { reservations: true } } },
   })
 
   return (
@@ -28,7 +28,6 @@ export default async function EventsPage() {
             <th>Title</th>
             <th>Date</th>
             <th>Status</th>
-            <th>Seats</th>
             <th>Reservations</th>
             <th>Actions</th>
           </tr>
@@ -39,7 +38,6 @@ export default async function EventsPage() {
               <td>{event.title}</td>
               <td>{event.date.toLocaleDateString()}</td>
               <td>{STATUS_LABELS[event.status] ?? event.status}</td>
-              <td>{event._count.seats}</td>
               <td>{event._count.reservations}</td>
               <td>
                 {event.status === 'draft' && (
@@ -47,9 +45,6 @@ export default async function EventsPage() {
                 )}
                 {event.status !== 'cancelled' && event.status !== 'completed' && (
                   <Link href={`/admin/events/${event.id}/reservations`}>Reservations</Link>
-                )}
-                {event.status === 'published' && (
-                  <Link href={`/admin/events/${event.id}/seating`}>Seating</Link>
                 )}
               </td>
             </tr>

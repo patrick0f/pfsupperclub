@@ -8,7 +8,7 @@ export async function GET() {
 
   const events = await prisma.event.findMany({
     orderBy: { date: 'desc' },
-    include: { _count: { select: { seats: true, reservations: true } } },
+    include: { _count: { select: { reservations: true } } },
   })
   return NextResponse.json(events)
 }
@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
       pricePerSeat: body.pricePerSeat,
       totalSeats: body.totalSeats,
       menuImageUrl: body.menuImageUrl ?? null,
-      tableShape: body.tableShape,
       cancellationPolicyText: body.cancellationPolicyText ?? '',
       themeBgColor: body.themeBgColor ?? '#ffffff',
       themeAccentColor: body.themeAccentColor ?? '#000000',

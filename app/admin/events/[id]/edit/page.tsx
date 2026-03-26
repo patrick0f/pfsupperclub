@@ -19,7 +19,6 @@ export default async function EditEventPage({ params }: { params: { id: string }
           pricePerSeat: event.pricePerSeat,
           totalSeats: event.totalSeats,
           menuImageUrl: event.menuImageUrl ?? '',
-          tableShape: event.tableShape,
           cancellationPolicyText: event.cancellationPolicyText,
           themeBgColor: event.themeBgColor ?? '#ffffff',
           themeAccentColor: event.themeAccentColor ?? '#000000',

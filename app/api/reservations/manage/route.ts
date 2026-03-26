@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { signSeatToken } from '@/lib/seat-token'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
@@ -24,7 +23,6 @@ export async function GET(req: NextRequest) {
     include: {
       event: true,
       guests: true,
-      seats: { orderBy: { seatNumber: 'asc' } },
     },
   })
 
@@ -32,7 +30,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const seatToken = signSeatToken(confirmationNumber, email)
-
-  return NextResponse.json({ ...reservation, seatToken })
+  return NextResponse.json(reservation)
 }

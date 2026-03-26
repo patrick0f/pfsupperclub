@@ -36,7 +36,6 @@ const RESERVATION = {
   user: { email: 'guest@example.com', firstName: 'Jane' },
   event: { title: 'Spring Dinner', date: new Date(), location: '123 Main St', cancellationPolicyText: 'No refunds' },
   guests: [{ isPrimary: true, name: 'Jane Smith' }],
-  seats: [{ seatNumber: 3 }, { seatNumber: 7 }],
 }
 
 function makeRequest(type: string) {

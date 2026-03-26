@@ -6,8 +6,6 @@ vi.mock('@/lib/admin-auth', () => ({ requireAdmin: vi.fn() }))
 vi.mock('@/lib/prisma', () => ({
   prisma: {
     event: { findUnique: vi.fn(), update: vi.fn() },
-    seat: { deleteMany: vi.fn() },
-    $transaction: vi.fn(),
   },
 }))
 
@@ -17,7 +15,7 @@ import { POST } from './[id]/unpublish/route'
 
 const mockRequireAdmin = vi.mocked(requireAdmin)
 const mockFindUnique = vi.mocked(prisma.event.findUnique)
-const mockTransaction = vi.mocked(prisma.$transaction)
+const mockUpdate = vi.mocked(prisma.event.update)
 
 const ADMIN = { id: 'admin-1', email: 'admin@example.com', name: 'Admin', phone: null, passwordHash: 'hash', createdAt: new Date(), updatedAt: new Date() }
 const PUBLISHED_EVENT = { id: 'event-1', status: 'published', _count: { reservations: 0 } }
@@ -43,12 +41,12 @@ describe('POST /api/admin/events/[id]/unpublish', () => {
     expect(res.status).toBe(409)
   })
 
-  test('deletes seat rows and reverts to draft on success', async () => {
+  test('reverts to draft on success', async () => {
     mockRequireAdmin.mockResolvedValue(ADMIN as any)
     mockFindUnique.mockResolvedValue(PUBLISHED_EVENT as any)
-    mockTransaction.mockResolvedValue([])
+    mockUpdate.mockResolvedValue({ ...PUBLISHED_EVENT, status: 'draft' } as any)
     const res = await POST(makeRequest(), { params: { id: 'event-1' } })
     expect(res.status).toBe(200)
-    expect(mockTransaction).toHaveBeenCalledOnce()
+    expect(mockUpdate).toHaveBeenCalledWith({ where: { id: 'event-1' }, data: { status: 'draft' } })
   })
 })

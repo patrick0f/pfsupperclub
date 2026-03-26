@@ -12,22 +12,19 @@ export default async function AdminDashboard() {
       include: {
         _count: {
           select: {
-            seats: { where: { reservationId: { not: null } } },
             reservations: { where: { paymentStatus: 'paid', reservationStatus: 'reserved' } },
           },
         },
         reservations: {
           where: { paymentStatus: 'paid', reservationStatus: 'reserved' },
-          select: { totalAmount: true, seatsSelected: true },
+          select: { totalAmount: true },
         },
       },
     }),
   ])
 
-  const totalSeats = publishedEvent ? await prisma.seat.count({ where: { eventId: publishedEvent.id } }) : 0
-  const seatsAssigned = publishedEvent?._count.seats ?? 0
+  const seatsSold = publishedEvent?._count.reservations ?? 0
   const revenue = publishedEvent?.reservations.reduce((sum, r) => sum + r.totalAmount, 0) ?? 0
-  const notSelected = publishedEvent?.reservations.filter(r => !r.seatsSelected).length ?? 0
 
   return (
     <main>
@@ -58,11 +55,9 @@ export default async function AdminDashboard() {
         ) : (
           <div>
             <p><strong>{publishedEvent.title}</strong> — {publishedEvent.date.toLocaleDateString()}</p>
-            <p>Seats sold: {seatsAssigned} / {totalSeats}</p>
+            <p>Reservations: {seatsSold}</p>
             <p>Revenue: ${(revenue / 100).toFixed(2)}</p>
-            <p>Not yet selected seats: {notSelected}</p>
             <Link href={`/admin/events/${publishedEvent.id}/reservations`}>Reservations</Link>
-            <Link href={`/admin/events/${publishedEvent.id}/seating`}>Seating chart</Link>
           </div>
         )}
       </section>

@@ -11,9 +11,11 @@ export async function GET() {
 
   if (!event) return NextResponse.json(null)
 
-  const seatsRemaining = await prisma.seat.count({
-    where: { eventId: event.id, reservationId: null },
+  const booked = await prisma.reservation.aggregate({
+    where: { eventId: event.id, paymentStatus: 'paid', reservationStatus: 'reserved' },
+    _sum: { partySize: true },
   })
+  const seatsRemaining = event.totalSeats - (booked._sum.partySize ?? 0)
 
   return NextResponse.json({ ...event, seatsRemaining })
 }

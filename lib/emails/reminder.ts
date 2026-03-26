@@ -1,7 +1,5 @@
 import { escapeHtml } from './escape'
 
-type ReminderSeat = { seatNumber: number }
-
 type ReminderEmailData = {
   confirmationNumber: string
   eventTitle: string
@@ -9,15 +7,10 @@ type ReminderEmailData = {
   eventLocation: string
   partySize: number
   primaryGuestName: string
-  seats: ReminderSeat[]
 }
 
 export function reminderEmail(data: ReminderEmailData): { subject: string; html: string } {
   const subject = `See you tomorrow — ${data.eventTitle}`
-
-  const seatsSection = data.seats.length > 0
-    ? `<p>Your assigned ${data.seats.length === 1 ? 'seat' : 'seats'}: <strong>${data.seats.map(s => `#${s.seatNumber}`).join(', ')}</strong></p>`
-    : `<p style="color: #888;">Seat assignments will be sent separately before the event.</p>`
 
   const html = `
 <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #222;">
@@ -30,8 +23,6 @@ export function reminderEmail(data: ReminderEmailData): { subject: string; html:
     <tr><td style="padding: 8px 0; color: #666;">Party size</td><td>${data.partySize}</td></tr>
     <tr><td style="padding: 8px 0; color: #666;">Confirmation</td><td>${escapeHtml(data.confirmationNumber)}</td></tr>
   </table>
-
-  ${seatsSection}
 
   <p style="color: #888; font-size: 14px; margin-top: 24px;">If you have any last-minute questions, reply to this email.</p>
 </div>

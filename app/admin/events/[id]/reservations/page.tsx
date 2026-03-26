@@ -12,7 +12,6 @@ export default async function EventReservations({ params }: { params: { id: stri
     include: {
       user: true,
       guests: true,
-      seats: { orderBy: { seatNumber: 'asc' } },
     },
   })
 

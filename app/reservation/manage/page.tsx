@@ -2,31 +2,24 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import GuestNav from '@/app/components/GuestNav'
 
 type Guest = { id: string; name: string; allergies: string | null; isPrimary: boolean }
-type Seat = { id: string; seatNumber: number }
 type ReservationData = {
   id: string
   confirmationNumber: string
   partySize: number
   totalAmount: number
   reservationStatus: string
-  seatsSelected: boolean
-  seatNote: string | null
   event: {
     id: string
     title: string
     date: string
     location: string
-    tableShape: string
     themeAccentColor: string | null
     cancellationPolicyText: string
   }
   guests: Guest[]
-  seats: Seat[]
-  seatToken: string
 }
 
 export default function ManageReservationWrapper() {
@@ -98,7 +91,6 @@ function ManageReservationPage() {
   const formattedDate = eventDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
   const formattedTime = eventDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
   const formattedAmount = (data.totalAmount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-  const seatUrl = `/seats?confirmationNumber=${confirmationNumber}&email=${encodeURIComponent(email)}&token=${data.seatToken}`
 
   return (
     <>
@@ -123,18 +115,6 @@ function ManageReservationPage() {
             <span className="text-gray-500">Amount paid</span>
             <span>{formattedAmount}</span>
           </div>
-          {data.seats.length > 0 && (
-            <div className="flex justify-between">
-              <span className="text-gray-500">Seats</span>
-              <span>{data.seats.map((s) => s.seatNumber).join(', ')}</span>
-            </div>
-          )}
-          {data.seatNote && (
-            <div className="flex justify-between gap-4">
-              <span className="text-gray-500">Note</span>
-              <span className="text-right">{data.seatNote}</span>
-            </div>
-          )}
         </div>
 
         <div className="flex flex-col gap-2 text-sm">
@@ -148,10 +128,6 @@ function ManageReservationPage() {
         </div>
 
         <div className="flex flex-col gap-3">
-          <Link href={seatUrl} className="rounded border border-gray-300 px-4 py-2 text-sm text-center">
-            {data.seatsSelected ? 'Change seats' : 'Select seats'}
-          </Link>
-
           {data.reservationStatus !== 'cancelled' && (
             showCancelConfirm ? (
               <div className="flex flex-col gap-2">

@@ -13,7 +13,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     include: {
       user: true,
       guests: true,
-      seats: { orderBy: { seatNumber: 'asc' } },
     },
   })
 
@@ -29,8 +28,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         totalAmount: r.totalAmount,
         paymentStatus: r.paymentStatus,
         reservationStatus: r.reservationStatus,
-        seatsSelected: r.seatsSelected,
-        seats: r.seats.map(s => s.seatNumber),
         createdAt: r.createdAt,
       }
     })

@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 
-type Seat = { seatNumber: number }
 type Guest = { isPrimary: boolean; name: string }
 type Reservation = {
   id: string
@@ -11,10 +10,7 @@ type Reservation = {
   totalAmount: number
   paymentStatus: string
   reservationStatus: string
-  seatsSelected: boolean
-  seatNote: string | null
   guests: Guest[]
-  seats: Seat[]
   user: { email: string }
 }
 
@@ -54,8 +50,6 @@ export function ReservationTable({ reservations }: { reservations: Reservation[]
           <th>Amount</th>
           <th>Payment</th>
           <th>Status</th>
-          <th>Seats</th>
-          <th>Note</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -71,8 +65,6 @@ export function ReservationTable({ reservations }: { reservations: Reservation[]
               <td>${(r.totalAmount / 100).toFixed(2)}</td>
               <td>{r.paymentStatus}</td>
               <td>{r.reservationStatus}</td>
-              <td>{r.seats.map(s => `#${s.seatNumber}`).join(', ') || (r.seatsSelected ? '—' : 'Not selected')}</td>
-              <td>{r.seatNote}</td>
               <td>
                 <button type="button" onClick={() => resend(r.id, 'confirmation')}>Resend confirmation</button>
                 <button type="button" onClick={() => resend(r.id, 'reminder')}>Resend reminder</button>

@@ -12,7 +12,6 @@ type EventFormData = {
   pricePerSeat: number
   totalSeats: number
   menuImageUrl: string
-  tableShape: 'rectangle' | 'round'
   cancellationPolicyText: string
   themeBgColor: string
   themeAccentColor: string
@@ -32,7 +31,6 @@ const DEFAULTS: EventFormData = {
   pricePerSeat: 0,
   totalSeats: 10,
   menuImageUrl: '',
-  tableShape: 'rectangle',
   cancellationPolicyText: '',
   themeBgColor: '#ffffff',
   themeAccentColor: '#000000',
@@ -103,13 +101,6 @@ export function EventForm({ eventId, initial }: Props) {
       <div>
         <label htmlFor="totalSeats">Total seats</label>
         <input id="totalSeats" type="number" min={1} value={form.totalSeats} onChange={e => update('totalSeats', e.target.value)} required />
-      </div>
-      <div>
-        <label htmlFor="tableShape">Table shape</label>
-        <select id="tableShape" value={form.tableShape} onChange={e => update('tableShape', e.target.value as 'rectangle' | 'round')}>
-          <option value="rectangle">Rectangle</option>
-          <option value="round">Round</option>
-        </select>
       </div>
       <div>
         <label htmlFor="cancellationPolicyText">Cancellation policy</label>

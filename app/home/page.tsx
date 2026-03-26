@@ -28,9 +28,14 @@ export default async function HomePage() {
     orderBy: { date: 'asc' },
   })
 
-  const seatsRemaining = upcomingEvent
-    ? await prisma.seat.count({ where: { eventId: upcomingEvent.id, reservationId: null } })
-    : 0
+  let seatsRemaining = 0
+  if (upcomingEvent) {
+    const booked = await prisma.reservation.aggregate({
+      where: { eventId: upcomingEvent.id, paymentStatus: 'paid', reservationStatus: 'reserved' },
+      _sum: { partySize: true },
+    })
+    seatsRemaining = upcomingEvent.totalSeats - (booked._sum.partySize ?? 0)
+  }
 
   const event = upcomingEvent ? { ...upcomingEvent, seatsRemaining } : null
 

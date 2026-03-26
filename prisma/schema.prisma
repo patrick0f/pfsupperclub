@@ -13,11 +13,6 @@ enum UserStatus {
   denied
 }
 
-enum TableShape {
-  rectangle
-  round
-}
-
 enum EventStatus {
   draft
   published
@@ -80,7 +75,6 @@ model Event {
   pricePerSeat            Int           @map("price_per_seat")
   totalSeats              Int           @map("total_seats")
   menuImageUrl            String?       @map("menu_image_url")
-  tableShape              TableShape    @map("table_shape")
   cancellationPolicyText  String        @db.Text @map("cancellation_policy_text")
   themeBgColor            String?       @map("theme_bg_color")
   themeAccentColor        String?       @map("theme_accent_color")
@@ -88,23 +82,10 @@ model Event {
   status                  EventStatus   @default(draft)
   createdAt               DateTime      @default(now()) @map("created_at")
   updatedAt               DateTime      @updatedAt @map("updated_at")
-  seats                   Seat[]
   reservations            Reservation[]
   recipes                 Recipe[]
 
   @@map("events")
-}
-
-model Seat {
-  id            String       @id @default(uuid())
-  eventId       String       @map("event_id")
-  seatNumber    Int          @map("seat_number")
-  reservationId String?      @map("reservation_id")
-  createdAt     DateTime     @default(now()) @map("created_at")
-  event         Event        @relation(fields: [eventId], references: [id])
-  reservation   Reservation? @relation(fields: [reservationId], references: [id])
-
-  @@map("seats")
 }
 
 model Reservation {
@@ -117,18 +98,14 @@ model Reservation {
   stripeCheckoutSessionId String?           @map("stripe_checkout_session_id")
   paymentStatus           PaymentStatus     @default(pending) @map("payment_status")
   reservationStatus       ReservationStatus @default(reserved) @map("reservation_status")
-  seatsSelected           Boolean           @default(false) @map("seats_selected")
-  seatNote                String?           @db.Text @map("seat_note")
   confirmationNumber      String            @unique @map("confirmation_number")
   confirmationSentAt      DateTime?         @map("confirmation_sent_at")
-  seatSelectionSentAt     DateTime?         @map("seat_selection_sent_at")
   reminderSentAt          DateTime?         @map("reminder_sent_at")
   createdAt               DateTime          @default(now()) @map("created_at")
   updatedAt               DateTime          @updatedAt @map("updated_at")
   user                    User              @relation(fields: [userId], references: [id])
   event                   Event             @relation(fields: [eventId], references: [id])
   guests                  Guest[]
-  seats                   Seat[]
 
   @@map("reservations")
 }

@@ -43,7 +43,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Event not available' }, { status: 400 })
   }
 
-  const seatsRemaining = await prisma.seat.count({ where: { eventId, reservationId: null } })
+  const booked = await prisma.reservation.aggregate({
+    where: { eventId, paymentStatus: 'paid', reservationStatus: 'reserved' },
+    _sum: { partySize: true },
+  })
+  const seatsRemaining = event.totalSeats - (booked._sum.partySize ?? 0)
   if (seatsRemaining < partySize) {
     return NextResponse.json({ error: 'Not enough seats available' }, { status: 400 })
   }

@@ -34,10 +34,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: 'Cancellations are locked within 72 hours of the event' }, { status: 400 })
   }
 
-  await prisma.$transaction([
-    prisma.seat.updateMany({ where: { reservationId: reservation.id }, data: { reservationId: null } }),
-    prisma.reservation.update({ where: { id: reservation.id }, data: { reservationStatus: 'cancelled' } }),
-  ])
+  await prisma.reservation.update({ where: { id: reservation.id }, data: { reservationStatus: 'cancelled' } })
 
   const { subject, html } = cancellationEmail({
     confirmationNumber: reservation.confirmationNumber,
