@@ -19,7 +19,6 @@ export default async function EventReservations({ params }: { params: { id: stri
     <main>
       <div>
         <h1>{event.title} — Reservations</h1>
-        <a href={`/api/admin/events/${params.id}/reservations?format=csv`} download>Export CSV</a>
       </div>
       <ReservationTable reservations={reservations} />
     </main>
