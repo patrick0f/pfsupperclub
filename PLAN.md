@@ -163,12 +163,23 @@ Admin auth guard, nav, profile. Dashboard (approvals + event snapshot). Guest li
 - SES: verify sending domain, production access
 - Smoke test: end-to-end booking + email delivery
 
-### Phase 6 — Polish
-- Mobile optimization
+### Phase 6 — UI / Styling
+Guest-facing (clean, sleek — primary user experience):
+- Landing page: email gate, waitlist/approval states
+- Home page: event card with theming (`theme_bg_color`, `theme_accent_color`, `theme_header_image_url`), party size selector
+- Booking flow: guest info form, Stripe handoff
+- Confirmation screen + manage reservation page
+- Past events list
+- Consistent typography, spacing, mobile-first responsive layout
+
+Admin-facing (minimal, functional — internal use only):
+- Dashboard, guest list, events, reservations table
+- Clean but no design investment beyond usability
+
+### Phase 7 — Polish
 - Loading states + error boundaries
 - Cleanup job: delete `pending` reservations older than 30 min
 - Auto-complete cron: move `published` → `completed` after event date passes
-- CloudWatch monitoring
 
 ---
 
