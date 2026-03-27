@@ -19,7 +19,7 @@ const ADMIN = { id: 'admin-1', email: 'admin@example.com', name: 'Admin', phone:
 describe('POST /api/upload', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    process.env.AWS_S3_BUCKET = 'my-bucket'
+    process.env.S3_BUCKET = 'my-bucket'
     process.env.AWS_REGION = 'us-east-1'
   })
 

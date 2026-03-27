@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   const sanitized = (filename as string).replace(/[^a-zA-Z0-9._-]/g, '_')
   const key = `uploads/${randomUUID()}-${sanitized}`
-  const bucket = process.env.AWS_S3_BUCKET!
+  const bucket = process.env.S3_BUCKET!
 
   const command = new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: contentType })
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 })
