@@ -33,12 +33,6 @@ enum ReservationStatus {
   no_show
 }
 
-enum Course {
-  appetizer
-  entree
-  dessert
-}
-
 model User {
   id              String        @id @default(uuid())
   email           String        @unique
@@ -83,7 +77,6 @@ model Event {
   createdAt               DateTime      @default(now()) @map("created_at")
   updatedAt               DateTime      @updatedAt @map("updated_at")
   reservations            Reservation[]
-  recipes                 Recipe[]
 
   @@map("events")
 }
@@ -122,53 +115,3 @@ model Guest {
   @@map("guests")
 }
 
-model Recipe {
-  id           String            @id @default(uuid())
-  eventId      String?           @map("event_id")
-  name         String
-  course       Course
-  baseServings Int               @map("base_servings")
-  createdAt    DateTime          @default(now()) @map("created_at")
-  updatedAt    DateTime          @updatedAt @map("updated_at")
-  event        Event?            @relation(fields: [eventId], references: [id])
-  components   RecipeComponent[]
-  steps        RecipeStep[]
-
-  @@map("recipes")
-}
-
-model RecipeComponent {
-  id          String             @id @default(uuid())
-  recipeId    String             @map("recipe_id")
-  label       String?
-  sortOrder   Int                @map("sort_order")
-  createdAt   DateTime           @default(now()) @map("created_at")
-  recipe      Recipe             @relation(fields: [recipeId], references: [id])
-  ingredients RecipeIngredient[]
-
-  @@map("recipe_components")
-}
-
-model RecipeIngredient {
-  id          String          @id @default(uuid())
-  componentId String          @map("component_id")
-  name        String
-  quantity    Decimal
-  unit        String
-  sortOrder   Int             @map("sort_order")
-  createdAt   DateTime        @default(now()) @map("created_at")
-  component   RecipeComponent @relation(fields: [componentId], references: [id])
-
-  @@map("recipe_ingredients")
-}
-
-model RecipeStep {
-  id          String   @id @default(uuid())
-  recipeId    String   @map("recipe_id")
-  stepNumber  Int      @map("step_number")
-  instruction String   @db.Text
-  createdAt   DateTime @default(now()) @map("created_at")
-  recipe      Recipe   @relation(fields: [recipeId], references: [id])
-
-  @@map("recipe_steps")
-}
