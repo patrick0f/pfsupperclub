@@ -171,10 +171,10 @@ Guest-facing (clean, sleek — primary user experience):
 - Confirmation screen + manage reservation page
 - Past events list
 - Consistent typography, spacing, mobile-first responsive layout
+- Profile page
 
-Admin-facing (minimal, functional — internal use only):
-- Dashboard, guest list, events, reservations table
-- Clean but no design investment beyond usability
+Admin-facing (clean, sleek, functional — internal use only):
+- Dashboard, guest list, events, profile
 
 ### Phase 7 — Polish
 - Loading states + error boundaries
