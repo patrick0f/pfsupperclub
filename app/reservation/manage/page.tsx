@@ -73,15 +73,31 @@ function ManageReservationPage() {
     }
   }
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center"><p className="text-gray-400">Loading...</p></div>
-  if (!data) return <div className="flex min-h-screen items-center justify-center"><p className="text-gray-500">Reservation not found.</p></div>
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-xs tracking-widest uppercase text-fg-muted">Loading...</p>
+      </div>
+    )
+  }
+
+  if (!data) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-fg-muted">Reservation not found.</p>
+      </div>
+    )
+  }
 
   if (cancelled) {
     return (
       <>
         <GuestNav />
-        <main className="max-w-lg mx-auto px-6 py-10">
-          <p className="text-gray-700">Your reservation has been cancelled.</p>
+        <main className="max-w-sm mx-auto px-6 py-14">
+          <p className="font-display text-2xl text-fg">Reservation cancelled.</p>
+          <p className="text-sm text-fg-muted mt-2">
+            Refunds are processed manually — you&apos;ll hear from us within a few days.
+          </p>
         </main>
       </>
     )
@@ -90,66 +106,82 @@ function ManageReservationPage() {
   const eventDate = new Date(data.event.date)
   const formattedDate = eventDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
   const formattedTime = eventDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-  const formattedAmount = (data.totalAmount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+  const formattedAmount = (data.totalAmount / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 })
+
+  const details = [
+    { label: 'Date & time', value: `${formattedDate} · ${formattedTime}` },
+    { label: 'Location', value: data.event.location },
+    { label: 'Party size', value: String(data.partySize) },
+    { label: 'Amount paid', value: formattedAmount },
+  ]
 
   return (
     <>
       <GuestNav />
-      <main className="max-w-lg mx-auto px-6 py-10 flex flex-col gap-8">
-        <div>
-          <h1 className="text-2xl font-semibold mb-1">{data.event.title}</h1>
-          <p className="text-sm text-gray-500">{formattedDate} · {formattedTime}</p>
-          <p className="text-sm text-gray-500">{data.event.location}</p>
+      <main className="max-w-sm mx-auto px-6 py-14 flex flex-col gap-10">
+        {/* Header */}
+        <div className="flex flex-col gap-1">
+          <h1 className="font-display text-3xl text-fg">{data.event.title}</h1>
+          <p className="font-display text-lg tracking-wider text-fg-muted">{data.confirmationNumber}</p>
         </div>
 
-        <div className="flex flex-col gap-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-500">Confirmation</span>
-            <span className="font-mono font-medium">{data.confirmationNumber}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Party size</span>
-            <span>{data.partySize}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Amount paid</span>
-            <span>{formattedAmount}</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 text-sm">
-          <h2 className="font-medium">Guests</h2>
-          {data.guests.map((g) => (
-            <div key={g.id}>
-              <span>{g.name}{g.isPrimary ? ' (primary)' : ''}</span>
-              {g.allergies && <span className="text-gray-500"> — {g.allergies}</span>}
+        {/* Details */}
+        <div className="flex flex-col">
+          {details.map(({ label, value }) => (
+            <div key={label} className="flex flex-col gap-1 py-4 border-t border-border">
+              <p className="text-xs tracking-widest uppercase text-fg-muted">{label}</p>
+              <p className="text-sm text-fg">{value}</p>
             </div>
           ))}
+
+          {/* Guests */}
+          <div className="flex flex-col gap-2 py-4 border-t border-border">
+            <p className="text-xs tracking-widest uppercase text-fg-muted">Guests</p>
+            {data.guests.map((g) => (
+              <div key={g.id} className="text-sm text-fg">
+                {g.name}{g.isPrimary ? <span className="text-fg-muted"> (primary)</span> : null}
+                {g.allergies && <span className="text-fg-muted"> — {g.allergies}</span>}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          {data.reservationStatus !== 'cancelled' && (
-            showCancelConfirm ? (
-              <div className="flex flex-col gap-2">
-                <p className="text-sm text-gray-600">{data.event.cancellationPolicyText}</p>
-                <p className="text-sm font-medium">Need to change your party size? Cancel this reservation and rebook.</p>
-                {error && <p className="text-red-600 text-sm">{error}</p>}
-                <div className="flex gap-2">
-                  <button onClick={() => setShowCancelConfirm(false)} className="flex-1 rounded border border-gray-300 px-4 py-2 text-sm">
-                    Keep reservation
-                  </button>
-                  <button onClick={handleCancel} disabled={cancelling} className="flex-1 rounded bg-red-600 px-4 py-2 text-sm text-white disabled:opacity-50">
-                    {cancelling ? 'Cancelling...' : 'Yes, cancel'}
-                  </button>
-                </div>
+        {/* Cancellation */}
+        {data.reservationStatus !== 'cancelled' && (
+          showCancelConfirm ? (
+            <div className="flex flex-col gap-5">
+              <div className="bg-bg-subtle p-4 text-xs leading-relaxed text-fg-muted">
+                {data.event.cancellationPolicyText}
               </div>
-            ) : (
-              <button onClick={() => setShowCancelConfirm(true)} className="rounded border border-red-300 px-4 py-2 text-sm text-red-600">
-                Cancel reservation
-              </button>
-            )
-          )}
-        </div>
+              <p className="text-xs text-fg-muted">
+                Need to change your party size? Cancel this reservation and rebook.
+              </p>
+              {error && <p className="text-xs text-red-600">{error}</p>}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowCancelConfirm(false)}
+                  className="flex-1 border border-border-strong text-fg text-xs tracking-widest uppercase py-3 transition-opacity hover:opacity-70"
+                >
+                  Keep it
+                </button>
+                <button
+                  onClick={handleCancel}
+                  disabled={cancelling}
+                  className="flex-1 bg-fg text-bg text-xs tracking-widest uppercase py-3 disabled:opacity-40 transition-opacity"
+                >
+                  {cancelling ? 'Cancelling...' : 'Yes, cancel'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowCancelConfirm(true)}
+              className="border border-border-strong text-fg text-xs tracking-widest uppercase py-3 transition-opacity hover:opacity-70"
+            >
+              Cancel reservation
+            </button>
+          )
+        )}
       </main>
     </>
   )

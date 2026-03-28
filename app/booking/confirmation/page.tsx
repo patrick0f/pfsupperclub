@@ -33,46 +33,48 @@ export default async function BookingConfirmationPage() {
   const formattedAmount = (reservation.totalAmount / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   })
+
+  const details = [
+    { label: 'Event', value: reservation.event.title },
+    { label: 'Date & time', value: `${formattedDate} · ${formattedTime}` },
+    { label: 'Location', value: reservation.event.location },
+    { label: 'Party size', value: String(reservation.partySize) },
+    { label: 'Amount paid', value: formattedAmount },
+  ]
 
   return (
     <>
       <GuestNav />
-      <main className="max-w-lg mx-auto px-6 py-10">
-        <h1 className="text-2xl font-semibold mb-2">You&apos;re confirmed!</h1>
-        <p className="text-gray-500 mb-8">A confirmation email is on its way.</p>
+      <main className="max-w-sm mx-auto px-6 py-14">
+        <div className="flex flex-col gap-10">
+          {/* Header */}
+          <div className="flex flex-col gap-3">
+            <span className="text-accent text-xl">✓</span>
+            <h1 className="font-display text-3xl text-fg">You&apos;re confirmed</h1>
+            <p className="text-sm text-fg-muted">A confirmation email is on its way.</p>
+          </div>
 
-        <div className="flex flex-col gap-3 text-sm">
-          <div>
-            <p className="text-gray-500">Event</p>
-            <p className="font-medium">{reservation.event.title}</p>
+          {/* Details */}
+          <div className="flex flex-col">
+            {details.map(({ label, value }) => (
+              <div key={label} className="flex flex-col gap-1 py-4 border-t border-border">
+                <p className="text-xs tracking-widest uppercase text-fg-muted">{label}</p>
+                <p className="text-sm text-fg">{value}</p>
+              </div>
+            ))}
+            <div className="flex flex-col gap-1 py-4 border-t border-border">
+              <p className="text-xs tracking-widest uppercase text-fg-muted">Confirmation number</p>
+              <p className="font-display text-xl tracking-wider text-fg">{reservation.confirmationNumber}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-gray-500">Date &amp; time</p>
-            <p>{formattedDate} · {formattedTime}</p>
-          </div>
-          <div>
-            <p className="text-gray-500">Location</p>
-            <p>{reservation.event.location}</p>
-          </div>
-          <div>
-            <p className="text-gray-500">Party size</p>
-            <p>{reservation.partySize}</p>
-          </div>
-          <div>
-            <p className="text-gray-500">Amount paid</p>
-            <p>{formattedAmount}</p>
-          </div>
-          <div>
-            <p className="text-gray-500">Confirmation number</p>
-            <p className="font-mono font-medium">{reservation.confirmationNumber}</p>
-          </div>
-        </div>
 
-        <div className="mt-8">
+          {/* Link */}
           <Link
             href={`/reservation/manage?confirmationNumber=${reservation.confirmationNumber}&email=${session.user.email}`}
-            className="text-sm underline"
+            className="text-xs tracking-widest uppercase text-fg-muted underline underline-offset-4"
           >
             Manage reservation
           </Link>

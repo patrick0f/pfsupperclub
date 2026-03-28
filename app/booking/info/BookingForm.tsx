@@ -14,6 +14,9 @@ type Props = {
   primaryEmail: string
 }
 
+const inputClass =
+  'w-full border-b border-border-strong bg-transparent py-2 text-sm text-fg placeholder:text-fg-muted focus:border-fg transition-colors outline-none'
+
 export default function BookingForm({ eventId, partySize, primaryName, primaryPhone, primaryEmail }: Props) {
   const router = useRouter()
   const [name, setName] = useState(primaryName)
@@ -59,15 +62,16 @@ export default function BookingForm({ eventId, partySize, primaryName, primaryPh
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full max-w-md">
-      <div className="flex flex-col gap-3">
-        <h2 className="font-medium">Your details</h2>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-10 w-full">
+      {/* Your details */}
+      <div className="flex flex-col gap-6">
+        <h2 className="font-display text-xl text-fg">Your details</h2>
         <input
           placeholder="Full name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          className={inputClass}
         />
         <input
           placeholder="Phone number"
@@ -75,52 +79,53 @@ export default function BookingForm({ eventId, partySize, primaryName, primaryPh
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           required
-          className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          className={inputClass}
         />
         <input
           value={primaryEmail}
           disabled
-          className="rounded border border-gray-200 bg-gray-50 px-4 py-2 text-gray-500"
+          className="w-full border-b border-border bg-transparent py-2 text-sm text-fg-muted"
         />
       </div>
 
+      {/* Additional guests */}
       {guests.length > 0 && (
-        <div className="flex flex-col gap-4">
-          <h2 className="font-medium">Additional guests</h2>
+        <div className="flex flex-col gap-6">
+          <h2 className="font-display text-xl text-fg">Additional guests</h2>
           {guests.map((guest, i) => (
-            <div key={i} className="flex flex-col gap-2">
-              <p className="text-sm text-gray-500">Guest {i + 2}</p>
+            <div key={i} className="flex flex-col gap-5 border-t border-border pt-5">
+              <p className="text-xs tracking-widest uppercase text-fg-muted">Guest {i + 2}</p>
               <input
                 placeholder="Full name"
                 value={guest.name}
                 onChange={(e) => updateGuest(i, 'name', e.target.value)}
                 required
-                className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                className={inputClass}
               />
               <input
                 placeholder="Allergies or dietary restrictions (optional)"
                 value={guest.allergies}
                 onChange={(e) => updateGuest(i, 'allergies', e.target.value)}
-                className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                className={inputClass}
               />
             </div>
           ))}
         </div>
       )}
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-xs text-red-600">{error}</p>}
 
       <div className="flex gap-3">
         <Link
           href="/home"
-          className="flex-1 rounded border border-gray-300 px-4 py-2 text-center text-sm"
+          className="flex-1 border border-border-strong text-fg text-xs tracking-widest uppercase py-3 text-center transition-opacity hover:opacity-70"
         >
           Back
         </Link>
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 rounded bg-black px-4 py-2 text-white text-sm disabled:opacity-50"
+          className="flex-1 bg-fg text-bg text-xs tracking-widest uppercase py-3 disabled:opacity-40 transition-opacity"
         >
           {loading ? 'Processing...' : 'Continue to payment'}
         </button>

@@ -12,17 +12,23 @@ export default function GuestNav() {
   }
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-      <Link href="/home" className="text-sm font-medium text-gray-900">
+    <nav className="flex items-center justify-between px-6 py-4 border-b border-border bg-bg">
+      <Link
+        href="/home"
+        className="font-display text-sm tracking-[0.2em] uppercase text-fg"
+      >
         PF Supper Club
       </Link>
-      <div className="flex items-center gap-4">
-        <Link href="/profile" className="text-sm text-gray-600 hover:text-gray-900">
+      <div className="flex items-center gap-6">
+        <Link
+          href="/profile"
+          className="text-xs tracking-widest uppercase text-fg-muted hover:text-fg transition-colors"
+        >
           Profile
         </Link>
         <button
           onClick={handleLogout}
-          className="text-sm text-gray-600 hover:text-gray-900"
+          className="text-xs tracking-widest uppercase text-fg-muted hover:text-fg transition-colors p-0 leading-none"
         >
           Sign out
         </button>

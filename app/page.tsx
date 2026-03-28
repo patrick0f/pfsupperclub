@@ -4,11 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 
-type Stage =
-  | 'email'
-  | 'admin'
-  | 'waitlisted'
-  | 'unknown'
+type Stage = 'email' | 'admin' | 'waitlisted' | 'unknown'
+
+const inputClass =
+  'w-full border-b border-border-strong bg-transparent py-2 text-sm text-fg placeholder:text-fg-muted focus:border-fg transition-colors outline-none'
+
+const primaryBtnClass =
+  'w-full bg-fg text-bg text-xs tracking-widest uppercase py-3 disabled:opacity-40 transition-opacity'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -80,9 +82,10 @@ export default function LandingPage() {
 
   if (stage === 'waitlisted') {
     return (
-      <main className="flex min-h-screen items-center justify-center p-8">
-        <p className="text-center text-gray-700">
-          You&apos;re on the waitlist — we&apos;ll let you know when you&apos;re approved.
+      <main className="flex min-h-screen flex-col items-center justify-center p-8 gap-3">
+        <h1 className="font-display text-4xl md:text-5xl text-fg">PF Supper Club</h1>
+        <p className="font-display text-base italic text-fg-muted mt-2">
+          You&apos;re on the list — we&apos;ll be in touch soon.
         </p>
       </main>
     )
@@ -90,18 +93,15 @@ export default function LandingPage() {
 
   if (stage === 'unknown') {
     return (
-      <main className="flex min-h-screen items-center justify-center p-8">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <p className="text-gray-700">
-            You&apos;re not on the guest list yet. Want to be added?
+      <main className="flex min-h-screen flex-col items-center justify-center p-8">
+        <div className="w-full max-w-xs flex flex-col gap-6 text-center">
+          <h1 className="font-display text-4xl md:text-5xl text-fg">PF Supper Club</h1>
+          <p className="text-sm text-fg-muted">
+            You&apos;re not on the guest list yet. Want to request an invitation?
           </p>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
-          <button
-            onClick={handleJoin}
-            disabled={loading}
-            className="rounded bg-black px-6 py-2 text-white disabled:opacity-50"
-          >
-            {loading ? 'Adding...' : 'Add me'}
+          {error && <p className="text-xs text-red-600">{error}</p>}
+          <button onClick={handleJoin} disabled={loading} className={primaryBtnClass}>
+            {loading ? 'Requesting...' : 'Request invitation'}
           </button>
         </div>
       </main>
@@ -109,38 +109,39 @@ export default function LandingPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-8">
-      <div className="w-full max-w-sm flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-center">PF Supper Club</h1>
+    <main className="flex min-h-screen flex-col items-center justify-center p-8">
+      <div className="w-full max-w-xs flex flex-col gap-8">
+        <div className="flex flex-col gap-2 text-center">
+          <h1 className="font-display text-4xl md:text-5xl text-fg">PF Supper Club</h1>
+          <p className="text-xs tracking-widest uppercase text-fg-muted">
+            An invitation-only dining experience
+          </p>
+        </div>
 
         {stage === 'email' && (
-          <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
+          <form onSubmit={handleEmailSubmit} className="flex flex-col gap-6">
             <input
               type="email"
               placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className={inputClass}
             />
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-            >
+            {error && <p className="text-xs text-red-600">{error}</p>}
+            <button type="submit" disabled={loading} className={primaryBtnClass}>
               {loading ? 'Checking...' : 'Continue'}
             </button>
           </form>
         )}
 
         {stage === 'admin' && (
-          <form onSubmit={handleAdminSubmit} className="flex flex-col gap-3">
+          <form onSubmit={handleAdminSubmit} className="flex flex-col gap-6">
             <input
               type="email"
               value={email}
               disabled
-              className="rounded border border-gray-200 bg-gray-50 px-4 py-2 text-gray-500"
+              className="w-full border-b border-border bg-transparent py-2 text-sm text-fg-muted"
             />
             <input
               type="password"
@@ -149,14 +150,10 @@ export default function LandingPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoFocus
-              className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className={inputClass}
             />
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
-            >
+            {error && <p className="text-xs text-red-600">{error}</p>}
+            <button type="submit" disabled={loading} className={primaryBtnClass}>
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </form>

@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+const inputClass =
+  'w-full border-b border-border-strong bg-transparent py-2 text-sm text-fg placeholder:text-fg-muted focus:border-fg transition-colors outline-none'
+
 export default function ProfileCompleteForm() {
   const router = useRouter()
   const [firstName, setFirstName] = useState('')
@@ -31,22 +34,27 @@ export default function ProfileCompleteForm() {
   }
 
   return (
-    <div className="w-full max-w-sm flex flex-col gap-4">
-      <h2 className="text-xl font-semibold">Complete your profile</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <div className="w-full max-w-xs flex flex-col gap-8">
+      <div className="flex flex-col gap-2">
+        <h2 className="font-display text-3xl text-fg">Complete your profile</h2>
+        <p className="text-xs tracking-widest uppercase text-fg-muted">
+          Just a few details before you continue
+        </p>
+      </div>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <input
           placeholder="First name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           required
-          className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          className={inputClass}
         />
         <input
           placeholder="Last name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           required
-          className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          className={inputClass}
         />
         <input
           placeholder="Phone number"
@@ -54,15 +62,15 @@ export default function ProfileCompleteForm() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           required
-          className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+          className={inputClass}
         />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
+        {error && <p className="text-xs text-red-600">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+          className="w-full bg-fg text-bg text-xs tracking-widest uppercase py-3 disabled:opacity-40 transition-opacity"
         >
-          {loading ? 'Saving...' : 'Save'}
+          {loading ? 'Saving...' : 'Continue'}
         </button>
       </form>
     </div>

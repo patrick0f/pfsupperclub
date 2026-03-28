@@ -13,6 +13,7 @@ type Event = {
   pricePerSeat: number
   menuImageUrl: string | null
   themeBgColor: string | null
+  themeFgColor: string | null
   themeAccentColor: string | null
   themeHeaderImageUrl: string | null
   seatsRemaining: number
@@ -37,58 +38,97 @@ export default function EventCard({ event }: { event: Event }) {
   const formattedPrice = (event.pricePerSeat / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   })
 
   function handleReserve() {
     router.push(`/booking/info?partySize=${partySize}&eventId=${event.id}`)
   }
 
+  /*
+    Full-page theming variant (uncomment to apply event colors to the entire page background):
+    Pass these as style to the <main> in home/page.tsx instead of here:
+    style={event.themeBgColor ? { '--bg': event.themeBgColor, '--bg-subtle': event.themeBgColor } as React.CSSProperties : undefined}
+  */
+
   return (
     <div
-      className="w-full max-w-lg rounded-xl overflow-hidden shadow-md"
-      style={event.themeBgColor ? { backgroundColor: event.themeBgColor } : undefined}
+      className="w-full max-w-lg overflow-hidden"
+      style={{
+        ...(event.themeBgColor ? { backgroundColor: event.themeBgColor } : {}),
+        ...(event.themeFgColor ? { '--fg': event.themeFgColor, '--fg-muted': event.themeFgColor + 'aa' } as React.CSSProperties : {}),
+      }}
     >
+      {/* Header image */}
       {event.themeHeaderImageUrl && (
-        <div className="relative h-48 w-full">
-          <Image src={event.themeHeaderImageUrl} alt={event.title} fill className="object-cover" />
-        </div>
+        <Image
+          src={event.themeHeaderImageUrl}
+          alt={event.title}
+          width={0}
+          height={0}
+          sizes="100vw"
+          className="w-full h-auto"
+        />
       )}
-      <div className="p-6 flex flex-col gap-4">
-        <div>
-          <h2 className="text-2xl font-semibold">{event.title}</h2>
-          <p className="text-sm mt-1 opacity-75">{formattedDate} · {formattedTime}</p>
-          <p className="text-sm opacity-75">{event.location}</p>
+
+      <div className="p-6 md:p-8 flex flex-col gap-6">
+        {/* Title + meta */}
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display text-3xl md:text-4xl text-fg">{event.title}</h2>
+          <p className="text-xs tracking-wider uppercase text-fg-muted">
+            {formattedDate} · {formattedTime} · {event.location}
+          </p>
         </div>
-        <p className="text-sm">{event.description}</p>
+
+        {/* Description */}
+        <p className="text-sm leading-relaxed text-fg-muted">{event.description}</p>
+
+        {/* Menu image */}
         {event.menuImageUrl && (
-          <div className="relative h-64 w-full rounded overflow-hidden">
-            <Image src={event.menuImageUrl} alt="Menu" fill className="object-cover" />
-          </div>
+          <Image src={event.menuImageUrl} alt="Menu" width={0} height={0} sizes="100vw" className="w-full h-auto" />
         )}
-        <p className="text-sm font-medium">{formattedPrice} per person</p>
+
+        {/* Price */}
+        <p className="text-sm font-body font-medium text-fg">{formattedPrice} per person</p>
+
+        {/* Booking section */}
         {event.seatsRemaining === 0 ? (
-          <p className="text-sm font-medium text-red-600">Sold out</p>
+          <p className="text-xs tracking-widest uppercase text-fg-muted">Sold out</p>
         ) : (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <label htmlFor="party-size" className="text-sm">Party size:</label>
-              <select
-                id="party-size"
-                value={partySize}
-                onChange={(e) => setPartySize(Number(e.target.value))}
-                className="rounded border border-gray-300 px-2 py-1 text-sm"
-              >
-                {Array.from({ length: maxParty }, (_, i) => i + 1).map((n) => (
-                  <option key={n} value={n}>{n}</option>
-                ))}
-              </select>
+          <div className="flex flex-col gap-4">
+            <p className="text-xs text-fg-muted">{event.seatsRemaining} seat{event.seatsRemaining !== 1 ? 's' : ''} remaining</p>
+
+            {/* Party size stepper */}
+            <div className="flex items-center gap-4">
+              <span className="text-xs tracking-widest uppercase text-fg-muted">Party size</span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPartySize((n) => Math.max(1, n - 1))}
+                  disabled={partySize <= 1}
+                  className="w-7 h-7 flex items-center justify-center border border-border-strong text-fg-muted disabled:opacity-30 text-lg leading-none"
+                >
+                  −
+                </button>
+                <span className="font-display text-2xl w-6 text-center text-fg">{partySize}</span>
+                <button
+                  type="button"
+                  onClick={() => setPartySize((n) => Math.min(maxParty, n + 1))}
+                  disabled={partySize >= maxParty}
+                  className="w-7 h-7 flex items-center justify-center border border-border-strong text-fg-muted disabled:opacity-30 text-lg leading-none"
+                >
+                  +
+                </button>
+              </div>
             </div>
+
             <button
               onClick={handleReserve}
-              className="rounded px-5 py-2 text-sm font-medium text-white"
-              style={event.themeAccentColor ? { backgroundColor: event.themeAccentColor } : { backgroundColor: '#000' }}
+              className="w-full py-3 text-xs tracking-widest uppercase text-accent-fg transition-opacity hover:opacity-80"
+              style={{ backgroundColor: event.themeAccentColor ?? 'var(--accent)' }}
             >
-              Reserve
+              Reserve a seat
             </button>
           </div>
         )}

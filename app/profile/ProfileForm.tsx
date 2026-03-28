@@ -9,6 +9,9 @@ type Props = {
   email: string
 }
 
+const inputClass =
+  'w-full border-b border-border-strong bg-transparent py-2 text-sm text-fg placeholder:text-fg-muted focus:border-fg transition-colors outline-none'
+
 export default function ProfileForm({ firstName, lastName, phone, email }: Props) {
   const [first, setFirst] = useState(firstName)
   const [last, setLast] = useState(lastName)
@@ -38,24 +41,24 @@ export default function ProfileForm({ firstName, lastName, phone, email }: Props
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full max-w-sm">
-      <div>
-        <label className="text-sm text-gray-500">Email</label>
-        <p className="text-sm mt-0.5">{email}</p>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-full">
+      <div className="flex flex-col gap-1">
+        <p className="text-xs tracking-widest uppercase text-fg-muted">Email</p>
+        <p className="text-sm text-fg">{email}</p>
       </div>
       <input
         placeholder="First name"
         value={first}
         onChange={(e) => setFirst(e.target.value)}
         required
-        className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+        className={inputClass}
       />
       <input
         placeholder="Last name"
         value={last}
         onChange={(e) => setLast(e.target.value)}
         required
-        className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+        className={inputClass}
       />
       <input
         placeholder="Phone number"
@@ -63,14 +66,14 @@ export default function ProfileForm({ firstName, lastName, phone, email }: Props
         value={ph}
         onChange={(e) => setPh(e.target.value)}
         required
-        className="rounded border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+        className={inputClass}
       />
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-      {saved && <p className="text-green-600 text-sm">Saved.</p>}
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      {saved && <p className="text-xs tracking-widest uppercase text-accent">Saved</p>}
       <button
         type="submit"
         disabled={loading}
-        className="rounded bg-black px-4 py-2 text-white disabled:opacity-50"
+        className="w-full bg-fg text-bg text-xs tracking-widest uppercase py-3 disabled:opacity-40 transition-opacity"
       >
         {loading ? 'Saving...' : 'Save changes'}
       </button>
