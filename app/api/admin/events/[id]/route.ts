@@ -33,6 +33,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (body.themeAccentColor && !hexColor.test(body.themeAccentColor)) {
     return NextResponse.json({ error: 'Invalid themeAccentColor' }, { status: 400 })
   }
+  if (body.themeFgColor && !hexColor.test(body.themeFgColor)) {
+    return NextResponse.json({ error: 'Invalid themeFgColor' }, { status: 400 })
+  }
 
   const updated = await prisma.event.update({
     where: { id: params.id },
@@ -46,6 +49,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       menuImageUrl: body.menuImageUrl !== undefined ? body.menuImageUrl : event.menuImageUrl,
       cancellationPolicyText: body.cancellationPolicyText ?? event.cancellationPolicyText,
       themeBgColor: body.themeBgColor ?? event.themeBgColor,
+      themeFgColor: body.themeFgColor ?? event.themeFgColor,
       themeAccentColor: body.themeAccentColor ?? event.themeAccentColor,
       themeHeaderImageUrl: body.themeHeaderImageUrl !== undefined ? body.themeHeaderImageUrl : event.themeHeaderImageUrl,
     },

@@ -31,6 +31,9 @@ export async function POST(req: NextRequest) {
   if (body.themeAccentColor && !hexColor.test(body.themeAccentColor)) {
     return NextResponse.json({ error: 'Invalid themeAccentColor' }, { status: 400 })
   }
+  if (body.themeFgColor && !hexColor.test(body.themeFgColor)) {
+    return NextResponse.json({ error: 'Invalid themeFgColor' }, { status: 400 })
+  }
 
   const event = await prisma.event.create({
     data: {
@@ -43,6 +46,7 @@ export async function POST(req: NextRequest) {
       menuImageUrl: body.menuImageUrl ?? null,
       cancellationPolicyText: body.cancellationPolicyText ?? '',
       themeBgColor: body.themeBgColor ?? '#ffffff',
+      themeFgColor: body.themeFgColor ?? '#0a0a0a',
       themeAccentColor: body.themeAccentColor ?? '#000000',
       themeHeaderImageUrl: body.themeHeaderImageUrl ?? null,
       status: 'draft',

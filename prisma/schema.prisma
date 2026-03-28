@@ -71,6 +71,7 @@ model Event {
   menuImageUrl            String?       @map("menu_image_url")
   cancellationPolicyText  String        @db.Text @map("cancellation_policy_text")
   themeBgColor            String?       @map("theme_bg_color")
+  themeFgColor            String?       @map("theme_fg_color")
   themeAccentColor        String?       @map("theme_accent_color")
   themeHeaderImageUrl     String?       @map("theme_header_image_url")
   status                  EventStatus   @default(draft)
