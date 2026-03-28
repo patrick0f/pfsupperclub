@@ -41,6 +41,9 @@ function ManageReservationPage() {
   const [cancelling, setCancelling] = useState(false)
   const [cancelled, setCancelled] = useState(false)
   const [error, setError] = useState('')
+  const [allergies, setAllergies] = useState('')
+  const [savingAllergies, setSavingAllergies] = useState(false)
+  const [allergiesSaved, setAllergiesSaved] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -48,7 +51,12 @@ function ManageReservationPage() {
         const res = await fetch(
           `/api/reservations/manage?confirmationNumber=${confirmationNumber}&email=${encodeURIComponent(email)}`
         )
-        if (res.ok) setData(await res.json())
+        if (res.ok) {
+          const json = await res.json()
+          setData(json)
+          const primary = json.guests?.find((g: Guest) => g.isPrimary)
+          setAllergies(primary?.allergies ?? '')
+        }
       } finally {
         setLoading(false)
       }
@@ -70,6 +78,24 @@ function ManageReservationPage() {
       setCancelled(true)
     } finally {
       setCancelling(false)
+    }
+  }
+
+  async function handleSaveAllergies() {
+    setSavingAllergies(true)
+    setAllergiesSaved(false)
+    try {
+      await fetch(
+        `/api/reservations/manage?confirmationNumber=${confirmationNumber}&email=${encodeURIComponent(email)}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ allergies }),
+        }
+      )
+      setAllergiesSaved(true)
+    } finally {
+      setSavingAllergies(false)
     }
   }
 
@@ -139,20 +165,49 @@ function ManageReservationPage() {
             <p className="text-xs tracking-widest uppercase text-fg-muted">Guests</p>
             {data.guests.map((g) => (
               <div key={g.id} className="text-sm text-fg">
-                {g.name}{g.isPrimary ? <span className="text-fg-muted"> (primary)</span> : null}
-                {g.allergies && <span className="text-fg-muted"> — {g.allergies}</span>}
+                {g.name}{g.isPrimary ? <span className="text-fg-muted"> (you)</span> : null}
               </div>
             ))}
           </div>
+
+          {/* Allergies */}
+          {data.reservationStatus !== 'cancelled' && (
+            <div className="flex flex-col gap-3 py-4 border-t border-border">
+              <p className="text-xs tracking-widest uppercase text-fg-muted">Allergies or dietary restrictions</p>
+              <input
+                type="text"
+                value={allergies}
+                onChange={e => { setAllergies(e.target.value); setAllergiesSaved(false) }}
+                placeholder="Any allergies or restrictions in your party? (optional)"
+                className="w-full border-b border-border-strong bg-transparent py-2 text-sm text-fg placeholder:text-fg-muted focus:border-fg transition-colors outline-none"
+              />
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={handleSaveAllergies}
+                  disabled={savingAllergies}
+                  className="text-xs tracking-widest uppercase text-fg-muted hover:text-fg transition-colors disabled:opacity-40"
+                >
+                  {savingAllergies ? 'Saving...' : 'Save'}
+                </button>
+                {allergiesSaved && <span className="text-xs text-accent">Saved</span>}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Cancellation */}
         {data.reservationStatus !== 'cancelled' && (
           showCancelConfirm ? (
             <div className="flex flex-col gap-5">
-              <div className="bg-bg-subtle p-4 text-xs leading-relaxed text-fg-muted">
-                {data.event.cancellationPolicyText}
-              </div>
+              {data.event.cancellationPolicyText && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs tracking-widest uppercase text-fg-muted">Cancellation policy</p>
+                  <div className="bg-bg-subtle p-4 text-xs leading-relaxed text-fg-muted">
+                    {data.event.cancellationPolicyText}
+                  </div>
+                </div>
+              )}
               <p className="text-xs text-fg-muted">
                 Need to change your party size? Cancel this reservation and rebook.
               </p>

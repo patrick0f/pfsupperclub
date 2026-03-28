@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-type Guest = { name: string; allergies: string }
-
 type Props = {
   eventId: string
   partySize: number
@@ -21,14 +19,15 @@ export default function BookingForm({ eventId, partySize, primaryName, primaryPh
   const router = useRouter()
   const [name, setName] = useState(primaryName)
   const [phone, setPhone] = useState(primaryPhone)
-  const [guests, setGuests] = useState<Guest[]>(
-    Array.from({ length: partySize - 1 }, () => ({ name: '', allergies: '' }))
+  const [guestNames, setGuestNames] = useState<string[]>(
+    Array.from({ length: partySize - 1 }, () => '')
   )
+  const [allergies, setAllergies] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  function updateGuest(index: number, field: keyof Guest, value: string) {
-    setGuests((prev) => prev.map((g, i) => (i === index ? { ...g, [field]: value } : g)))
+  function updateGuestName(index: number, value: string) {
+    setGuestNames((prev) => prev.map((n, i) => (i === index ? value : n)))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -43,8 +42,8 @@ export default function BookingForm({ eventId, partySize, primaryName, primaryPh
           eventId,
           partySize,
           guests: [
-            { name, allergies: '', isPrimary: true },
-            ...guests.map((g) => ({ name: g.name, allergies: g.allergies, isPrimary: false })),
+            { name, allergies, isPrimary: true },
+            ...guestNames.map((n) => ({ name: n, allergies: '', isPrimary: false })),
           ],
         }),
       })
@@ -89,29 +88,36 @@ export default function BookingForm({ eventId, partySize, primaryName, primaryPh
       </div>
 
       {/* Additional guests */}
-      {guests.length > 0 && (
+      {guestNames.length > 0 && (
         <div className="flex flex-col gap-6">
           <h2 className="font-display text-xl text-fg">Additional guests</h2>
-          {guests.map((guest, i) => (
+          {guestNames.map((guestName, i) => (
             <div key={i} className="flex flex-col gap-5 border-t border-border pt-5">
               <p className="text-xs tracking-widest uppercase text-fg-muted">Guest {i + 2}</p>
               <input
                 placeholder="Full name"
-                value={guest.name}
-                onChange={(e) => updateGuest(i, 'name', e.target.value)}
+                value={guestName}
+                onChange={(e) => updateGuestName(i, e.target.value)}
                 required
-                className={inputClass}
-              />
-              <input
-                placeholder="Allergies or dietary restrictions (optional)"
-                value={guest.allergies}
-                onChange={(e) => updateGuest(i, 'allergies', e.target.value)}
                 className={inputClass}
               />
             </div>
           ))}
         </div>
       )}
+
+      {/* Shared allergies */}
+      <div className="flex flex-col gap-3 border-t border-border pt-6">
+        <label className="text-xs tracking-widest uppercase text-fg-muted">
+          Allergies or dietary restrictions
+        </label>
+        <input
+          placeholder="Any allergies or restrictions in your party? (optional)"
+          value={allergies}
+          onChange={(e) => setAllergies(e.target.value)}
+          className={inputClass}
+        />
+      </div>
 
       {error && <p className="text-xs text-red-600">{error}</p>}
 
