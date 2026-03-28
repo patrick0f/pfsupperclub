@@ -87,6 +87,12 @@ export default function LandingPage() {
         <p className="font-display text-base italic text-fg-muted mt-2">
           You&apos;re on the list — we&apos;ll be in touch soon.
         </p>
+        <button
+          onClick={() => { setStage('email'); setEmail('') }}
+          className="text-xs tracking-widest uppercase text-fg-muted hover:text-fg transition-colors mt-4"
+        >
+          ← Back
+        </button>
       </main>
     )
   }
