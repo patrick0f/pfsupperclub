@@ -2,22 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design tokens: Crisp White (default) ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #ffffff;
+  --bg-subtle: #f7f7f5;
+  --fg: #0a0a0a;
+  --fg-muted: #6b6b6b;
+  --accent: #2d5a3d;
+  --accent-fg: #ffffff;
+  --border: #e8e8e4;
+  --border-strong: #c8c8c2;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+  ─── Backup A: Warm Cream ───
+  Swap in by uncommenting below and commenting out :root above.
+
+:root {
+  --bg: #faf7f2;
+  --bg-subtle: #f2ede5;
+  --fg: #1c1917;
+  --fg-muted: #7a6b5e;
+  --accent: #c4622d;
+  --accent-fg: #ffffff;
+  --border: #e2d9cc;
+  --border-strong: #c4b8a8;
+}
+*/
+
+/*
+  ─── Backup B: Dark Moody ───
+  Swap in by uncommenting below and commenting out :root above.
+
+:root {
+  --bg: #0f1a14;
+  --bg-subtle: #172114;
+  --fg: #f5f0e8;
+  --fg-muted: #8a9e8e;
+  --accent: #c9a84c;
+  --accent-fg: #0f1a14;
+  --border: #243322;
+  --border-strong: #3a5040;
+}
+*/
+
+@layer base {
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body), system-ui, sans-serif;
   }
-}
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), Georgia, serif;
+  }
+
+  input,
+  textarea,
+  select {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
 }
 
 @layer utilities {
