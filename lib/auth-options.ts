@@ -30,5 +30,5 @@ export const authOptions = {
       return session
     },
   },
-  pages: { signIn: '/admin/login' },
+  pages: { signIn: '/' },
 }
