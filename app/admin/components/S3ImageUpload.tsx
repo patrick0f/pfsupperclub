@@ -21,7 +21,7 @@ export function S3ImageUpload({ label, value, onChange }: Props) {
       const res = await fetch('/api/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename: file.name }),
+        body: JSON.stringify({ filename: file.name, contentType: file.type }),
       })
       if (!res.ok) throw new Error('Upload failed')
       const { uploadUrl, s3Url } = await res.json()
@@ -35,12 +35,16 @@ export function S3ImageUpload({ label, value, onChange }: Props) {
   }
 
   return (
-    <div>
-      <label>{label}</label>
-      <input type="file" accept="image/png,image/jpeg" onChange={handleFile} disabled={uploading} />
-      {uploading && <span>Uploading…</span>}
-      {error && <span role="alert">{error}</span>}
-      {value && <img src={value} alt={label} style={{ maxWidth: 200, marginTop: 8 }} />}
+    <div className="flex flex-col gap-3">
+      <p className="text-xs tracking-widest uppercase text-fg-muted">{label}</p>
+      <label className="border border-dashed border-border-strong p-6 text-center text-xs text-fg-muted cursor-pointer hover:border-fg-muted transition-colors">
+        <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleFile} disabled={uploading} className="sr-only" />
+        {uploading ? 'Uploading...' : 'Click to upload'}
+      </label>
+      {error && <span role="alert" className="text-xs text-red-600">{error}</span>}
+      {value && (
+        <img src={value} alt={label} className="max-w-[200px] border border-border" />
+      )}
     </div>
   )
 }

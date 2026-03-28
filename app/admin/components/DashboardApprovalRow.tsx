@@ -18,12 +18,26 @@ export function DashboardApprovalRow({ user }: { user: User }) {
   }
 
   return (
-    <tr>
-      <td>{user.firstName} {user.lastName}</td>
-      <td>{user.email}</td>
-      <td>
-        <button type="button" onClick={() => handleAction('approve')}>Approve</button>
-        <button type="button" onClick={() => handleAction('deny')}>Deny</button>
+    <tr className="border-t border-border">
+      <td className="px-4 py-3 text-sm text-fg">{user.firstName} {user.lastName}</td>
+      <td className="px-4 py-3 text-sm text-fg-muted">{user.email}</td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => handleAction('approve')}
+            className="text-xs text-accent hover:opacity-70 transition-opacity"
+          >
+            Approve
+          </button>
+          <button
+            type="button"
+            onClick={() => handleAction('deny')}
+            className="text-xs text-fg-muted hover:text-fg transition-colors"
+          >
+            Deny
+          </button>
+        </div>
       </td>
     </tr>
   )

@@ -6,14 +6,14 @@ import { AdminProfileForm } from '../components/AdminProfileForm'
 
 export default async function AdminProfile() {
   const session = await getServerSession(authOptions)
-  if (!session?.user?.adminId) redirect('/admin/login')
+  if (!session?.user?.adminId) redirect('/')
 
   const admin = await prisma.admin.findUnique({ where: { id: session.user.adminId } })
-  if (!admin) redirect('/admin/login')
+  if (!admin) redirect('/')
 
   return (
-    <main>
-      <h1>Profile</h1>
+    <main className="max-w-sm mx-auto px-6 py-12 flex flex-col gap-8">
+      <h1 className="font-display text-3xl text-fg">Profile</h1>
       <AdminProfileForm admin={{ id: admin.id, name: admin.name, email: admin.email, phone: admin.phone }} />
     </main>
   )
