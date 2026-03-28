@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import GuestNav from '@/app/components/GuestNav'
 import ProfileCompleteForm from './ProfileCompleteForm'
 import EventCard from './EventCard'
+import ReservationView from './ReservationView'
 
 export default async function HomePage() {
   const session = await getIronSession<AppSession>(await cookies(), sessionOptions)
@@ -28,26 +29,54 @@ export default async function HomePage() {
     orderBy: { date: 'asc' },
   })
 
-  let seatsRemaining = 0
-  if (upcomingEvent) {
-    const booked = await prisma.reservation.aggregate({
-      where: { eventId: upcomingEvent.id, paymentStatus: 'paid', reservationStatus: 'reserved' },
-      _sum: { partySize: true },
-    })
-    seatsRemaining = upcomingEvent.totalSeats - (booked._sum.partySize ?? 0)
+  if (!upcomingEvent) {
+    return (
+      <>
+        <GuestNav />
+        <main className="flex min-h-screen flex-col items-center justify-center p-8">
+          <p className="text-sm text-fg-muted">New events coming soon!</p>
+        </main>
+      </>
+    )
   }
 
-  const event = upcomingEvent ? { ...upcomingEvent, seatsRemaining } : null
+  const existingReservation = await prisma.reservation.findFirst({
+    where: {
+      userId: session.user.id,
+      eventId: upcomingEvent.id,
+      paymentStatus: 'paid',
+      reservationStatus: 'reserved',
+    },
+    include: { guests: true },
+  })
+
+  if (existingReservation) {
+    const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { email: true } })
+    return (
+      <>
+        <GuestNav />
+        <main className="flex min-h-screen flex-col items-center justify-center p-8">
+          <ReservationView
+            reservation={existingReservation}
+            event={upcomingEvent}
+            email={user?.email ?? ''}
+          />
+        </main>
+      </>
+    )
+  }
+
+  const booked = await prisma.reservation.aggregate({
+    where: { eventId: upcomingEvent.id, paymentStatus: 'paid', reservationStatus: 'reserved' },
+    _sum: { partySize: true },
+  })
+  const seatsRemaining = upcomingEvent.totalSeats - (booked._sum.partySize ?? 0)
 
   return (
     <>
       <GuestNav />
       <main className="flex min-h-screen flex-col items-center justify-center p-8">
-        {event ? (
-          <EventCard event={event} />
-        ) : (
-          <p className="text-gray-500 text-center">New events coming soon!</p>
-        )}
+        <EventCard event={{ ...upcomingEvent, seatsRemaining }} />
       </main>
     </>
   )
