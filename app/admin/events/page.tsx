@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { EventActions } from '../components/EventActions'
+import { EventPreviewButton } from '../components/EventPreviewButton'
 
 const STATUS_STYLES: Record<string, string> = {
   draft: 'border border-border-strong text-fg-muted',
@@ -43,7 +44,7 @@ export default async function EventsPage() {
           <tbody>
             {events.map(event => (
               <tr key={event.id} className="border-t border-border">
-                <td className="px-4 py-3 text-fg font-body">{event.title}</td>
+                <td className="px-4 py-3 font-body"><EventPreviewButton event={event} /></td>
                 <td className="px-4 py-3 text-fg-muted">
                   {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </td>
