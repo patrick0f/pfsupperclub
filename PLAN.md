@@ -12,7 +12,7 @@ Private reservation platform. Invite-only. One event at a time. Guests book and 
 | Database | AWS RDS (PostgreSQL) via Prisma |
 | Hosting | AWS Amplify |
 | Payments | Stripe Checkout |
-| Email | AWS SES |
+| Email | Resend |
 | File Storage | AWS S3 (menu PNGs, header images) |
 | Auth | NextAuth.js (admin only) + iron-session (guests) |
 
@@ -42,7 +42,7 @@ Private reservation platform. Invite-only. One event at a time. Guests book and 
 
 ---
 
-## Emails (AWS SES)
+## Emails (Resend)
 
 | Trigger | Email |
 |---|---|
@@ -150,7 +150,7 @@ Next.js 14 + Prisma + PostgreSQL, schema + migration, NextAuth admin auth, iron-
 Full guest booking flow: landing page (email gate), profile completion, home page with event + theming, guest info, Stripe Checkout, webhook, confirmation screen, manage reservation (cancel), past events, guest nav.
 
 ### Phase 3 — Emails ✅
-AWS SES integration. All transactional emails: approval, confirmation, 24h reminder, cancellation, event cancellation. Hourly cron route.
+Resend integration. All transactional emails: approval, confirmation, 24h reminder, cancellation, event cancellation. Hourly cron route.
 
 ### Phase 4 — Admin Panel ✅
 Admin auth guard, nav, profile. Dashboard (approvals + event snapshot). Guest list (approve/deny). Event CRUD + publish/unpublish/cancel. Reservations table (cancel, no-show, refund, resend). Public `GET /api/events` endpoint.
@@ -160,7 +160,7 @@ Admin auth guard, nav, profile. Dashboard (approvals + event snapshot). Guest li
 - S3: bucket + CORS for presigned uploads
 - Amplify: connect repo, all env vars
 - Stripe: production webhook
-- SES: verify sending domain, production access
+- Resend: verify sending domain, add API key to Amplify env vars
 - Smoke test: end-to-end booking + email delivery
 
 ### Phase 6 — UI / Styling
@@ -196,12 +196,15 @@ STRIPE_SECRET_KEY
 STRIPE_PUBLISHABLE_KEY
 STRIPE_WEBHOOK_SECRET       # from: stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
-# AWS
+# AWS (S3 only)
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
-AWS_SES_FROM_EMAIL
 AWS_S3_BUCKET_NAME
+
+# Email
+RESEND_API_KEY
+FROM_EMAIL                  # e.g. hello@yourdomain.com
 
 # Cron
 CRON_SECRET                 # openssl rand -base64 32

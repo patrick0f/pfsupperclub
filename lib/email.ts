@@ -1,14 +1,12 @@
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
+import { Resend } from 'resend'
 
-const ses = new SESClient({ region: process.env.AWS_REGION })
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<void> {
-  await ses.send(new SendEmailCommand({
-    Source: process.env.SES_FROM_EMAIL,
-    Destination: { ToAddresses: [to] },
-    Message: {
-      Subject: { Data: subject },
-      Body: { Html: { Data: html } },
-    },
-  }))
+  await resend.emails.send({
+    from: process.env.FROM_EMAIL!,
+    to,
+    subject,
+    html,
+  })
 }

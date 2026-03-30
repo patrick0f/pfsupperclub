@@ -7,7 +7,7 @@ Private reservation platform for a supper club.
 - Next.js 14 (App Router, TypeScript, Tailwind)
 - PostgreSQL + Prisma 7
 - Stripe Checkout
-- AWS SES / S3 / Amplify
+- Resend (email) / AWS S3 + Amplify
 - NextAuth.js (admin) + iron-session (guests)
 
 ## Setup
