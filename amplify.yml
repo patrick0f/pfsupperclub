@@ -7,6 +7,7 @@ frontend:
         - npx prisma generate
     build:
       commands:
+        - env | grep -E '^(DATABASE_URL|NEXTAUTH_SECRET|NEXTAUTH_URL|NEXT_PUBLIC_BASE_URL|IRON_SESSION_PASSWORD|STRIPE_SECRET_KEY|STRIPE_PUBLISHABLE_KEY|STRIPE_WEBHOOK_SECRET|RESEND_API_KEY|FROM_EMAIL|S3_BUCKET|CRON_SECRET)=' > .env.production
         - npm run build
   artifacts:
     baseDirectory: .next
