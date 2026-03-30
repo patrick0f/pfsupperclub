@@ -20,7 +20,7 @@ describe('POST /api/upload', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     process.env.S3_BUCKET = 'my-bucket'
-    process.env.AWS_REGION = 'us-east-1'
+    process.env.S3_REGION = 'us-east-1'
   })
 
   test('returns 401 when not admin', async () => {

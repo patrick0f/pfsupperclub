@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   const command = new PutObjectCommand({ Bucket: bucket, Key: key, ContentType: contentType })
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 })
-  const s3Url = `https://${bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
+  const s3Url = `https://${bucket}.s3.${process.env.S3_REGION}.amazonaws.com/${key}`
 
   return NextResponse.json({ uploadUrl, s3Url })
 }
