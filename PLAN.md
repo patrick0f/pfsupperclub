@@ -9,7 +9,7 @@ Private reservation platform. Invite-only. One event at a time. Guests book and 
 | Layer | Technology |
 |---|---|
 | Frontend + Backend | Next.js 14 App Router (TypeScript) |
-| Database | AWS RDS (PostgreSQL) via Prisma |
+| Database | Neon (PostgreSQL) via Prisma |
 | Hosting | AWS Amplify |
 | Payments | Stripe Checkout |
 | Email | Resend |
@@ -155,10 +155,10 @@ Resend integration. All transactional emails: approval, confirmation, 24h remind
 ### Phase 4 — Admin Panel ✅
 Admin auth guard, nav, profile. Dashboard (approvals + event snapshot). Guest list (approve/deny). Event CRUD + publish/unpublish/cancel. Reservations table (cancel, no-show, refund, resend). Public `GET /api/events` endpoint.
 
-### Phase 5 — AWS Deployment
-- RDS: provision, `npx prisma migrate deploy`
+### Phase 5 — Deployment ✅
+- Neon: provision, `npx prisma migrate deploy`
 - S3: bucket + CORS for presigned uploads
-- Amplify: connect repo, all env vars
+- Amplify: connect repo, all env vars persisted via `.env.production` in build
 - Stripe: production webhook
 - Resend: verify sending domain, add API key to Amplify env vars
 - Smoke test: end-to-end booking + email delivery
@@ -196,11 +196,11 @@ STRIPE_SECRET_KEY
 STRIPE_PUBLISHABLE_KEY
 STRIPE_WEBHOOK_SECRET       # from: stripe listen --forward-to localhost:3000/api/webhooks/stripe
 
-# AWS (S3 only)
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_REGION
-AWS_S3_BUCKET_NAME
+# S3
+S3_ACCESS_KEY_ID
+S3_SECRET_ACCESS_KEY
+S3_REGION
+S3_BUCKET
 
 # Email
 RESEND_API_KEY

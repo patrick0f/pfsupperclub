@@ -65,7 +65,7 @@ describe('POST /api/admin/events/[id]/cancel', () => {
       { id: 'res-1', user: { email: 'a@example.com' } },
       { id: 'res-2', user: { email: 'b@example.com' } },
     ] as any)
-    mockSendEmail.mockRejectedValueOnce(new Error('SES error')).mockResolvedValueOnce(undefined)
+    mockSendEmail.mockRejectedValueOnce(new Error('Email send error')).mockResolvedValueOnce(undefined)
 
     const res = await POST(makeRequest(), { params: { id: 'event-1' } })
     expect(res.status).toBe(200)

@@ -13,18 +13,20 @@ export function reminderEmail(data: ReminderEmailData): { subject: string; html:
   const subject = `See you tomorrow — ${data.eventTitle}`
 
   const html = `
-<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #222;">
-  <h2>See you tomorrow, ${escapeHtml(data.primaryGuestName)}.</h2>
-  <p>Just a reminder that <strong>${escapeHtml(data.eventTitle)}</strong> is tomorrow.</p>
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 24px; color: #1a1a1a;">
+  <h2 style="font-size: 24px; font-weight: 600; margin: 0 0 8px;">See you tomorrow, ${escapeHtml(data.primaryGuestName)}.</h2>
+  <p style="color: #555; font-size: 15px; margin: 0 0 32px; line-height: 1.5;">Just a reminder that <strong>${escapeHtml(data.eventTitle)}</strong> is tomorrow.</p>
 
-  <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
-    <tr><td style="padding: 8px 0; color: #666;">Date</td><td>${formatDateTime(data.eventDate)}</td></tr>
-    <tr><td style="padding: 8px 0; color: #666;">Location</td><td>${escapeHtml(data.eventLocation)}</td></tr>
-    <tr><td style="padding: 8px 0; color: #666;">Party size</td><td>${data.partySize}</td></tr>
-    <tr><td style="padding: 8px 0; color: #666;">Confirmation</td><td>${escapeHtml(data.confirmationNumber)}</td></tr>
+  <table style="width: 100%; border-collapse: collapse; margin: 0 0 32px;">
+    <tr><td style="padding: 12px 24px 12px 0; color: #888; font-size: 14px; white-space: nowrap; vertical-align: top;">Date</td><td style="padding: 12px 0; font-size: 15px;">${formatDateTime(data.eventDate)}</td></tr>
+    <tr><td style="padding: 12px 24px 12px 0; color: #888; font-size: 14px; white-space: nowrap; vertical-align: top;">Location</td><td style="padding: 12px 0; font-size: 15px;">${escapeHtml(data.eventLocation)}</td></tr>
+    <tr><td style="padding: 12px 24px 12px 0; color: #888; font-size: 14px; white-space: nowrap; vertical-align: top;">Party size</td><td style="padding: 12px 0; font-size: 15px;">${data.partySize}</td></tr>
+    <tr><td style="padding: 12px 24px 12px 0; color: #888; font-size: 14px; white-space: nowrap; vertical-align: top;">Confirmation</td><td style="padding: 12px 0; font-size: 15px; font-weight: 600; letter-spacing: 0.5px;">${escapeHtml(data.confirmationNumber)}</td></tr>
   </table>
 
-  <p style="color: #888; font-size: 14px; margin-top: 24px;">If you have any last-minute questions, reply to this email.</p>
+  <div style="border-top: 1px solid #e5e5e5; padding-top: 20px;">
+    <p style="color: #888; font-size: 13px; margin: 0; line-height: 1.5;">If you have any last-minute questions, reply to this email.</p>
+  </div>
 </div>
 `.trim()
 
