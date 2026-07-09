@@ -57,95 +57,90 @@ type SeedEvent = {
   themeBgColor: string
   themeFgColor: string
   themeAccentColor: string
-  // fraction of seats to fill with paid+reserved bookings (0 for non-bookable)
-  fill: number
+  // number of seats to fill with paid + reserved bookings (0 for non-bookable)
+  book: number
 }
 
 const EVENTS: SeedEvent[] = [
   {
-    key: 'midsummer',
-    title: 'Midsummer at the Long Table',
+    key: 'fine-dining',
+    title: 'Fine Dining',
     description:
-      'A six-course celebration of peak-season produce served family-style down one long candlelit table. ' +
-      'We build the night around whatever the farmers pull that week — heirloom tomatoes, first-of-season corn, ' +
-      'stone fruit — with a raw bar to start and a brown-butter peach tart to finish. Natural-wine pairing included; ' +
-      'bring your curiosity and an appetite for conversation with strangers who won\'t be strangers by dessert.',
+      'A dressed-up dinner with a few courses and real table service. Come as you are or dress up — either way ' +
+      'it\'s a nice night out without the nice-restaurant bill. Seats are limited, so grab one early.',
     date: eventAt(18),
-    location: 'Private loft · Arts District (address sent on confirmation)',
-    pricePerSeat: 13500,
-    totalSeats: 30,
+    location: 'The Common Room · North Campus (address sent on confirmation)',
+    pricePerSeat: 3000,
+    totalSeats: 15,
     status: 'published',
-    themeBgColor: '#1c1710',
-    themeFgColor: '#f4ece0',
-    themeAccentColor: '#c8743c',
-    fill: 0.5,
+    themeBgColor: '#15140f',
+    themeFgColor: '#f2eee6',
+    themeAccentColor: '#b89457',
+    book: 13,
   },
   {
-    key: 'fire-vine',
-    title: 'Fire & Vine: A Live-Fire Autumn Dinner',
+    key: 'taco-night',
+    title: 'Taco Night',
     description:
-      'Everything touches flame. A whole-hearth menu cooked over oak and grapevine cuttings — charred radicchio, ' +
-      'ember-roasted squash, a forty-day dry-aged ribeye carved at the table — paired with bold reds from small ' +
-      'growers. Seating is limited to keep the fire the center of the room.',
+      'Build-your-own taco bar with all the fixings — carnitas, grilled veggies, rice, beans, and a few salsas. ' +
+      'Casual, cheap, and easy. Vegetarian options always available.',
     date: eventAt(46),
-    location: 'The Greenhouse · Hudson Valley (address sent on confirmation)',
-    pricePerSeat: 15500,
-    totalSeats: 24,
+    location: 'The Common Room · North Campus (address sent on confirmation)',
+    pricePerSeat: 1500,
+    totalSeats: 15,
     status: 'draft',
-    themeBgColor: '#17110d',
-    themeFgColor: '#f1e7db',
-    themeAccentColor: '#b5462b',
-    fill: 0,
+    themeBgColor: '#1b1410',
+    themeFgColor: '#f4ebe0',
+    themeAccentColor: '#d98a34',
+    book: 0,
   },
   {
-    key: 'coastal',
-    title: 'Coastal Catch — A Spring Seafood Feast',
+    key: 'backyard-bbq',
+    title: 'Backyard BBQ',
     description:
-      'A love letter to the shoreline. Day-boat oysters and crudo to open, a saffron seafood stew ladled tableside, ' +
-      'and a butter-poached halibut that had regulars talking for weeks. Crisp coastal whites throughout.',
+      'Burgers, grilled veggies, and sides out on the lawn. Bring a friend, grab a plate, and hang out. ' +
+      'Let us know about any allergies when you book.',
     date: eventAt(-32),
-    location: 'Riverside Studio · Brooklyn (address sent on confirmation)',
-    pricePerSeat: 14500,
-    totalSeats: 34,
+    location: 'The Courtyard · West Hall (address sent on confirmation)',
+    pricePerSeat: 2000,
+    totalSeats: 15,
     status: 'completed',
-    themeBgColor: '#0f1a1f',
-    themeFgColor: '#e8f0f2',
-    themeAccentColor: '#3f8ba0',
-    fill: 0.9,
+    themeBgColor: '#14180f',
+    themeFgColor: '#eef1e6',
+    themeAccentColor: '#7aa03c',
+    book: 15,
   },
   {
-    key: 'nose-to-tail',
-    title: 'Nose to Tail: A Winter Butcher\'s Table',
+    key: 'omakase',
+    title: 'Omakase',
     description:
-      'A whole-animal dinner in the truest sense — nothing wasted, everything considered. Rillettes and terrine to ' +
-      'start, a slow-braised shoulder as the centerpiece, marrow and crackling along the way. Not for the faint of ' +
-      'heart; deeply rewarding for the curious. Big Burgundy and a few surprises in the glass.',
+      'Chef\'s choice, served piece by piece at the counter. Twelve seats only, so it fills up fast. ' +
+      'Tell us about allergies ahead of time.',
     date: eventAt(-78),
-    location: 'Chef\'s Table at Marlow · Lower East Side (address sent on confirmation)',
-    pricePerSeat: 16500,
-    totalSeats: 24,
+    location: 'The Kitchen Counter · East Hall (address sent on confirmation)',
+    pricePerSeat: 3000,
+    totalSeats: 12,
     status: 'completed',
-    themeBgColor: '#1a1213',
-    themeFgColor: '#f0e5e3',
-    themeAccentColor: '#8f3a44',
-    fill: 1.0,
+    themeBgColor: '#101314',
+    themeFgColor: '#e9eff0',
+    themeAccentColor: '#3f8ba0',
+    book: 12,
   },
   {
-    key: 'la-tavola',
-    title: 'La Tavola: A Night in Emilia-Romagna',
+    key: 'easter-dinner',
+    title: 'Easter Dinner',
     description:
-      'Hand-rolled pasta and the food of Italy\'s richest culinary region. Mortadella and Parmigiano aged 36 months ' +
-      'to start, tortellini in brodo folded that afternoon, and a tagliatelle al ragù cooked low since dawn. ' +
-      'Lambrusco and Sangiovese poured generously. Come hungry; leave part of the family.',
-    date: eventAt(-142),
-    location: 'The Conservatory · West Village (address sent on confirmation)',
-    pricePerSeat: 12500,
-    totalSeats: 40,
+      'A big family-style Easter meal — ham, roasted vegetables, and plenty of sides. ' +
+      'Bring a friend who\'d otherwise be eating alone.',
+    date: new Date(2026, 3, 5, 17, 0, 0, 0), // Easter Sunday, April 5, 2026
+    location: 'The Dining Hall · Main Campus (address sent on confirmation)',
+    pricePerSeat: 2500,
+    totalSeats: 15,
     status: 'completed',
-    themeBgColor: '#181a12',
-    themeFgColor: '#eef0e4',
-    themeAccentColor: '#7a8b3c',
-    fill: 0.9,
+    themeBgColor: '#16131a',
+    themeFgColor: '#f1ecf2',
+    themeAccentColor: '#b06fa8',
+    book: 15,
   },
 ]
 
@@ -160,10 +155,11 @@ const MEMBER_NAMES: ReadonlyArray<[string, string]> = [
   ['Grace', 'Kim'], ['Julian', 'Alvarez'], ['Fiona', 'Gallagher'], ['Samuel', 'Adeyemi'],
   ['Chloe', 'Dubois'],
 ]
-const WAITLIST_EMAILS = ['tessa.friedman@gmail.com', 'omar.haddad@outlook.com', 'reese.calloway@icloud.com']
-const DENIED_EMAILS = ['bulk.events.nyc@gmail.com', 'quicktix.resell@gmail.com']
+const WAITLIST_EMAILS = ['tessa.friedman@gmail.com', 'omar.haddad@gmail.com', 'reese.calloway@gmail.com']
+const DENIED_EMAILS = ['bulk.events.promo@gmail.com', 'quicktix.resell@gmail.com']
 
-const EMAIL_DOMAINS = ['gmail.com', 'outlook.com', 'protonmail.com', 'hey.com', 'icloud.com', 'fastmail.com']
+// ~80% gmail, rest a light mix so it isn't suspiciously uniform.
+const EMAIL_DOMAINS = ['gmail.com', 'gmail.com', 'gmail.com', 'gmail.com', 'gmail.com', 'gmail.com', 'gmail.com', 'gmail.com', 'outlook.com', 'icloud.com']
 const emailFor = (first: string, last: string) => `${first}.${last}`.toLowerCase() + '@' + pick(EMAIL_DOMAINS)
 const phone = () => `+1 (${randInt(201, 989)}) ${randInt(200, 999)}-${randInt(1000, 9999)}`
 
@@ -178,17 +174,6 @@ const ALLERGIES = [
   'Vegetarian', 'Pescatarian', 'Dairy-free', 'No pork', 'Sesame allergy',
 ] as const
 
-const PARTY_WEIGHTS: ReadonlyArray<[number, number]> = [[1, 0.3], [2, 0.45], [3, 0.15], [4, 0.1]]
-function weightedPartySize(max: number): number {
-  const r = rand()
-  let acc = 0
-  for (const [size, w] of PARTY_WEIGHTS) {
-    acc += w
-    if (r <= acc) return Math.min(size, max)
-  }
-  return Math.min(1, max)
-}
-
 const usedConfirmations = new Set<string>()
 function uniqueConfirmation(): string {
   let code = generateConfirmationNumber()
@@ -197,7 +182,7 @@ function uniqueConfirmation(): string {
   return code
 }
 
-const TARGET_RESERVATIONS = 75
+const TARGET_RESERVATIONS = 60
 
 async function main() {
   // --- Wipe (dependency order); admins are never touched ---
@@ -310,47 +295,27 @@ async function main() {
     nameOfMember.set(memberIds[i], `${MEMBER_NAMES[i][0]} ${MEMBER_NAMES[i][1]}`)
   }
 
-  // Phase 1 — fill each bookable event with paid + reserved bookings (these consume seats).
+  // Phase 1 — fill each bookable event to its target with paid + reserved bookings.
+  // Each student books a single seat for themselves (party size 1), so a full room = `book` reservations.
   for (const e of bookable) {
-    const targetSeats = Math.round(e.totalSeats * e.fill)
-    let seatsBooked = 0
     const attendees = shuffle(memberIds)
-    for (const userId of attendees) {
-      if (seatsBooked >= targetSeats) break
-      const partySize = weightedPartySize(Math.min(4, targetSeats - seatsBooked))
-      if (partySize < 1) break
-      await createReservation(e, userId, nameOfMember.get(userId)!, partySize, 'paid', 'reserved')
-      seatsBooked += partySize
+    for (let i = 0; i < e.book; i++) {
+      await createReservation(e, attendees[i], nameOfMember.get(attendees[i])!, 1, 'paid', 'reserved')
     }
   }
 
-  // Phase 2 — pad to the target with realistic attrition rows (do NOT consume seats).
+  // Phase 2 — a handful of historical cancellations on past events (do NOT consume seats).
   const pastEvents = bookable.filter(isPast)
   const upcoming = bookable.find((e) => e.status === 'published')!
-  // (paymentStatus, reservationStatus) combos for events that already happened.
-  const pastAttrition: ReadonlyArray<['paid' | 'refunded' | 'failed', 'cancelled' | 'no_show']> = [
-    ['refunded', 'cancelled'], ['refunded', 'cancelled'], ['paid', 'no_show'], ['failed', 'cancelled'],
+  const cancellations: ReadonlyArray<['refunded' | 'failed', 'cancelled']> = [
+    ['refunded', 'cancelled'], ['refunded', 'cancelled'], ['refunded', 'cancelled'],
+    ['refunded', 'cancelled'], ['failed', 'cancelled'],
   ]
-  // For the upcoming event: a cancelled-and-refunded and one in-flight abandoned checkout.
-  const upcomingAttrition: ReadonlyArray<['refunded' | 'pending', 'cancelled' | 'reserved']> = [
-    ['refunded', 'cancelled'], ['pending', 'reserved'],
-  ]
-
-  let upcomingUsed = 0
-  while (total < TARGET_RESERVATIONS) {
-    const useUpcoming = upcomingUsed < 3 && chance(0.2)
-    const e = useUpcoming ? upcoming : pick(pastEvents)
+  for (const [pay, res] of cancellations) {
+    if (total >= TARGET_RESERVATIONS) break
+    const e = pick(pastEvents)
     const userId = pick(memberIds)
-    const primaryName = nameOfMember.get(userId)!
-    const partySize = weightedPartySize(4)
-    if (useUpcoming) {
-      const [pay, res] = pick(upcomingAttrition)
-      await createReservation(e, userId, primaryName, partySize, pay, res)
-      upcomingUsed++
-    } else {
-      const [pay, res] = pick(pastAttrition)
-      await createReservation(e, userId, primaryName, partySize, pay, res)
-    }
+    await createReservation(e, userId, nameOfMember.get(userId)!, 1, pay, res)
   }
 
   const booked = await prisma.reservation.aggregate({
